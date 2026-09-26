@@ -192,7 +192,7 @@ describe('lock delay', () => {
     const e = engine(1, { sdf: 0, das: 1000 });
     setPiece(e, 'T', 0, 3, H - 2);
     let frames = 0;
-    let dir = A.LEFT;
+    let dir: number = A.LEFT;
     while (e.stats.pieces === 0 && frames < 2000) {
       for (let i = 0; i < 20 && e.stats.pieces === 0; i++) { e.step(); frames++; }
       if (e.stats.pieces) break;

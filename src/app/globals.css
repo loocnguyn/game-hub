@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #05050d;
+  --bg-2: #0a0a18;
+  --panel: rgba(18, 18, 38, 0.72);
+  --panel-solid: #11112a;
+  --panel-2: rgba(28, 28, 58, 0.8);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.16);
+  --text: #eef0ff;
+  --muted: #9aa0c3;
+  --dim: #6b7096;
+  --cyan: #22d3ee;
+  --violet: #a855f7;
+  --pink: #ec4899;
+  --amber: #f59e0b;
+  --green: #22c55e;
+  --red: #ef4444;
+  --gold: #e2b75a;
+  --radius: 16px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-dim: var(--dim);
+  --color-cyan: var(--cyan);
+  --color-violet: var(--violet);
+  --color-pink: var(--pink);
+  --color-amber: var(--amber);
+  --color-green: var(--green);
+  --color-red: var(--red);
+  --color-gold: var(--gold);
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-body), sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(168, 85, 247, 0.16), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(34, 211, 238, 0.12), transparent 60%),
+    radial-gradient(800px 600px at 50% 120%, rgba(236, 72, 153, 0.1), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgba(168, 85, 247, 0.45);
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.glass {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+.text-gradient {
+  background: linear-gradient(92deg, #67e8f9 0%, #c084fc 45%, #f472b6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.neon-ring {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 10px 40px -12px rgba(0, 0, 0, 0.8);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 2px); }
+  40% { transform: translate(3px, -2px); }
+  60% { transform: translate(-2px, -1px); }
+  80% { transform: translate(2px, 1px); }
+}
+@keyframes pop-in {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 2.4s ease-in-out infinite; }
+.animate-shake { animation: shake 0.35s linear; }
+.animate-pop { animation: pop-in 0.18s ease-out; }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+input,
+select,
+textarea {
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

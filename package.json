@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:api": "vitest run -c vitest.api.config.mts",
+    "bundle:fn": "node scripts/bundle-fn.mjs",
+    "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
@@ -23,11 +27,13 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^22.20.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.186.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
     "tailwindcss": "^4",

@@ -1,69 +1,149 @@
-import Image from "next/image";
+'use client';
+import dynamic from 'next/dynamic';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { clsx } from 'clsx';
+import { useAuth } from '@/lib/auth';
+import { GAMES } from '@/lib/games';
+import { Button, Field, inputClass, Panel, Segmented, Spinner } from '@/components/ui';
 
-export default function Home() {
+const HeroScene = dynamic(() => import('@/components/three/HeroScene'), { ssr: false });
+
+const USERNAME_RE = /^[a-z0-9_.]{3,20}$/;
+
+function AuthCard() {
+  const { signIn, signUp } = useAuth();
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    const u = username.trim().toLowerCase();
+    if (!USERNAME_RE.test(u)) return setError('Tên đăng nhập 3–20 ký tự: chữ thường không dấu, số, dấu _ hoặc .');
+    if (password.length < 6) return setError('Mật khẩu cần ít nhất 6 ký tự');
+    if (mode === 'register') {
+      if (password !== confirm) return setError('Mật khẩu nhập lại không khớp');
+      if (name.trim().length < 2) return setError('Tên hiển thị cần ít nhất 2 ký tự');
+    }
+    setBusy(true);
+    try {
+      if (mode === 'login') await signIn(u, password);
+      else await signUp(u, password, name.trim());
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <Panel className="w-full max-w-md p-7">
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="font-display text-2xl font-bold">{mode === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}</h2>
+        <Segmented
+          value={mode}
+          onChange={(m) => { setMode(m); setError(''); }}
+          options={[{ value: 'login', label: 'Đăng nhập' }, { value: 'register', label: 'Đăng ký' }]}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      </div>
+      <form onSubmit={submit} className="space-y-4" noValidate>
+        <Field label="Tên đăng nhập">
+          <input className={inputClass} autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="vd: loc.nguyen" autoFocus />
+        </Field>
+        {mode === 'register' && (
+          <Field label="Tên hiển thị">
+            <input className={inputClass} value={name} maxLength={30} onChange={(e) => setName(e.target.value)} placeholder="Tên bạn bè sẽ thấy" />
+          </Field>
+        )}
+        <Field label="Mật khẩu">
+          <input className={inputClass} type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} />
+        </Field>
+        {mode === 'register' && (
+          <Field label="Nhập lại mật khẩu">
+            <input className={inputClass} type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          </Field>
+        )}
+        {error && <p role="alert" className="rounded-lg border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">{error}</p>}
+        <Button size="lg" className="w-full" loading={busy}>{mode === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}</Button>
+        <p className="text-center text-xs text-dim">
+          Dùng chung tài khoản với Royal Poker.
+        </p>
+      </form>
+    </Panel>
+  );
+}
+
+function Landing() {
+  const { ready, session } = useAuth();
+  const router = useRouter();
+  const params = useSearchParams();
+
+  useEffect(() => {
+    if (ready && session) {
+      const next = params.get('next');
+      router.replace(next && next.startsWith('/') && !next.startsWith('//') ? next : '/hub');
+    }
+  }, [ready, session, params, router]);
+
+  return (
+    <div className="relative min-h-screen overflow-hidden">
+      <div className="fixed inset-0 -z-0">
+        <HeroScene />
+      </div>
+      <div className="pointer-events-none fixed inset-0 bg-gradient-to-r from-[#05050d] via-[#05050d]/70 to-transparent" />
+
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-5">
+        <header className="flex h-20 items-center">
+          <div className="flex items-center gap-2.5">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-cyan-400 via-violet-500 to-fuchsia-500 shadow-[0_0_30px_-4px_rgba(168,85,247,0.9)]">
+              <div className="grid grid-cols-2 gap-[3px]">{[0, 1, 2, 3].map((i) => <span key={i} className={clsx('h-2 w-2 rounded-[2px]', i === 3 ? 'bg-white/40' : 'bg-white')} />)}</div>
+            </div>
+            <span className="font-display text-xl font-bold tracking-wide">NEON<span className="text-gradient">ARCADE</span></span>
+          </div>
+        </header>
+
+        <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[1.2fr_1fr]">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-200">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-300" /> {GAMES.filter((g) => !g.comingSoon).length} trò chơi
+            </div>
+            <h1 className="font-display text-5xl font-bold leading-[1.05] sm:text-6xl lg:text-7xl">
+              Neon <span className="text-gradient">Arcade</span>
+            </h1>
+            <p className="mt-5 max-w-xl text-lg text-muted">
+              Tetris, cờ vua, cờ tướng, caro, tiến lên, cờ tỉ phú, dò mìn, sudoku và vài game khác. Tạo phòng rồi gửi mã cho bạn bè là chơi được.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-2">
+              {GAMES.filter((g) => !g.comingSoon).map((g) => (
+                <span key={g.id} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-sm backdrop-blur" style={{ boxShadow: `0 0 18px -8px ${g.accent}` }}>
+                  <span style={{ color: g.accent }}>{g.icon}</span>{g.name}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div className="flex justify-center lg:justify-end" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.15 }}>
+            {!ready ? <Spinner className="h-8 w-8 text-cyan-300" /> : session ? <Spinner className="h-8 w-8 text-cyan-300" /> : <AuthCard />}
+          </motion.div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        <footer className="py-6 text-center text-xs text-dim">Chip trong casino là chip ảo để giải trí, không có giá trị quy đổi.</footer>
+      </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <Landing />
+    </Suspense>
   );
 }
