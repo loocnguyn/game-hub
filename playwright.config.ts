@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: [['list']],
   outputDir: '.tmp/e2e-results',
   use: {
-    baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.E2E_BASE_URL || 'http://localhost:3100',
     channel: 'msedge',
     headless: true,
     viewport: { width: 1440, height: 900 },
@@ -19,8 +19,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
+    // A dedicated port so another local dev server on :3000 is never tested by mistake.
+    command: 'npx next dev -p 3100',
+    url: 'http://localhost:3100',
     reuseExistingServer: true,
     timeout: 120_000,
   },

@@ -19,6 +19,8 @@ export const PLAYER_COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855
 const GROUP_COLORS: Record<string, string> = {
   brown: '#92400e', lightblue: '#7dd3fc', pink: '#f472b6', orange: '#fb923c', red: '#ef4444', yellow: '#facc15', green: '#22c55e', darkblue: '#3b82f6',
 };
+// Secondary buttons drawn on the light board centre need dark text to stay readable.
+const ON_BOARD = '!border-emerald-900/25 !bg-emerald-950/10 !text-emerald-950 hover:!bg-emerald-950/20';
 const ICONS: Record<string, string> = { go: '➜', chance: '?', chest: '✉', tax: '₫', jail: '▦', parking: 'P', gotojail: '⚑', station: '🚉', util: '⚡' };
 
 /** Grid cell (row, col) on an 11x11 board for square i (GO bottom-right, counter-clockwise). */
@@ -142,10 +144,10 @@ export default function MonopolyGame({ room }: { room: Room }) {
       {myTurn && (
         <div className="flex flex-wrap justify-center gap-2">
           {s.phase === 'roll' && <Button onClick={() => act('roll')} loading={busy}>Đổ xúc xắc</Button>}
-          {s.phase === 'roll' && s.players[me].inJail && <Button variant="ghost" onClick={() => act('payjail')} className="text-stone-900">Nộp 50 ra tù</Button>}
-          {s.phase === 'roll' && s.players[me].inJail && s.players[me].jailCards > 0 && <Button variant="ghost" onClick={() => act('payjail', { useCard: true })}>Dùng thẻ ra tù</Button>}
+          {s.phase === 'roll' && s.players[me].inJail && <Button variant="ghost" onClick={() => act('payjail')} className={ON_BOARD}>Nộp 50 ra tù</Button>}
+          {s.phase === 'roll' && s.players[me].inJail && s.players[me].jailCards > 0 && <Button variant="ghost" onClick={() => act('payjail', { useCard: true })} className={ON_BOARD}>Dùng thẻ ra tù</Button>}
           {s.phase === 'buy' && here && <Button variant="success" onClick={() => act('buy', { buy: true })} disabled={s.players[me].money < (here.price ?? 0)}>Mua {here.name} ({money(here.price!)})</Button>}
-          {s.phase === 'buy' && <Button variant="ghost" onClick={() => act('buy', { buy: false })}>Không mua</Button>}
+          {s.phase === 'buy' && <Button variant="ghost" onClick={() => act('buy', { buy: false })} className={ON_BOARD}>Không mua</Button>}
           {s.phase === 'end' && <Button onClick={() => act('end')} loading={busy}>Kết thúc lượt</Button>}
           {s.phase === 'debt' && s.debt && (
             <>
@@ -153,7 +155,7 @@ export default function MonopolyGame({ room }: { room: Room }) {
               <Button variant="danger" onClick={() => act('bankrupt')}>Phá sản</Button>
             </>
           )}
-          {(s.phase === 'roll' || s.phase === 'end') && <Button variant="ghost" onClick={() => setTrade(true)}>Đổi chác</Button>}
+          {(s.phase === 'roll' || s.phase === 'end') && <Button variant="ghost" onClick={() => setTrade(true)} className={ON_BOARD}>Đổi chác</Button>}
         </div>
       )}
       {s.status === 'waiting' && (
