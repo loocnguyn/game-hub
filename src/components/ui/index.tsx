@@ -8,14 +8,14 @@ type Variant = 'primary' | 'ghost' | 'danger' | 'success' | 'gold';
 export function Button({
   variant = 'primary', size = 'md', className, loading, children, ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; size?: 'sm' | 'md' | 'lg'; loading?: boolean }) {
-  const base = 'relative inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-150 select-none disabled:opacity-45 disabled:cursor-not-allowed active:scale-[0.97]';
+  const base = 'relative inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-[filter,transform,background-color] duration-100 select-none disabled:opacity-45 disabled:cursor-not-allowed active:translate-y-px';
   const sizes = { sm: 'h-8 px-3 text-sm', md: 'h-10 px-4 text-sm', lg: 'h-12 px-6 text-base' };
   const variants: Record<Variant, string> = {
-    primary: 'text-white bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500 shadow-[0_8px_30px_-8px_rgba(168,85,247,0.8)] hover:brightness-110',
-    ghost: 'text-text bg-white/5 border border-white/10 hover:bg-white/10',
-    danger: 'text-white bg-gradient-to-r from-rose-600 to-red-500 hover:brightness-110',
-    success: 'text-white bg-gradient-to-r from-emerald-500 to-green-500 hover:brightness-110',
-    gold: 'text-black bg-gradient-to-r from-amber-300 to-yellow-500 hover:brightness-110',
+    primary: 'raised text-accent-ink bg-accent hover:brightness-105',
+    ghost: 'text-text bg-panel-2 border border-line-2 hover:bg-[#232834]',
+    danger: 'raised text-white bg-[#d93a3a] hover:brightness-110',
+    success: 'raised text-white bg-[#2f9e5b] hover:brightness-110',
+    gold: 'raised text-accent-ink bg-accent hover:brightness-105',
   };
   return (
     <button className={clsx(base, sizes[size], variants[variant], className)} disabled={loading || rest.disabled} {...rest}>
@@ -35,7 +35,7 @@ export function Spinner({ className }: { className?: string }) {
 }
 
 export function Panel({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={clsx('glass neon-ring rounded-2xl', className)}>{children}</div>;
+  return <div className={clsx('glass neon-ring rounded-xl', className)}>{children}</div>;
 }
 
 export function Field({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
@@ -43,7 +43,7 @@ export function Field({ label, children, hint }: { label: string; children: Reac
   // A <label> would name the *first* button of a Segmented control, so only native form
   // controls get one; groups of buttons are labelled with aria-labelledby instead.
   const nativeControl = isValidElement(children) && typeof children.type === 'string' && ['input', 'select', 'textarea'].includes(children.type);
-  const caption = <span id={id} className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted">{label}</span>;
+  const caption = <span id={id} className="mb-1.5 block text-sm font-medium text-muted">{label}</span>;
   const hintEl = hint && <span className="mt-1 block text-xs text-dim">{hint}</span>;
   if (nativeControl) {
     return <label className="block">{caption}{children}{hintEl}</label>;
@@ -52,21 +52,21 @@ export function Field({ label, children, hint }: { label: string; children: Reac
 }
 
 export const inputClass =
-  'h-11 w-full rounded-xl border border-white/10 bg-black/30 px-3.5 text-[15px] outline-none transition placeholder:text-dim focus:border-cyan-400/60 focus:bg-black/40';
+  'h-11 w-full rounded-lg border border-line-2 bg-bg px-3.5 text-[15px] outline-none transition placeholder:text-dim focus:border-accent/70';
 
 export function Segmented<T extends string | number>({
   value, onChange, options, className,
 }: { value: T; onChange: (v: T) => void; options: { value: T; label: ReactNode }[]; className?: string }) {
   return (
-    <div className={clsx('inline-flex flex-wrap gap-1 rounded-xl border border-white/10 bg-black/30 p-1', className)}>
+    <div className={clsx('inline-flex flex-wrap gap-1 rounded-lg border border-line bg-bg p-1', className)}>
       {options.map((o) => (
         <button
           key={String(o.value)}
           type="button"
           onClick={() => onChange(o.value)}
           className={clsx(
-            'rounded-lg px-3 py-1.5 text-sm font-medium transition',
-            o.value === value ? 'bg-gradient-to-r from-cyan-500/80 to-violet-500/80 text-white shadow' : 'text-muted hover:bg-white/5 hover:text-text',
+            'rounded-md px-3 py-1.5 text-sm font-medium transition',
+            o.value === value ? 'bg-text text-bg' : 'text-muted hover:bg-white/5 hover:text-text',
           )}
         >
           {o.label}
@@ -86,8 +86,8 @@ export function Avatar({ name, size = 36, color }: { name: string; size?: number
       className="grid shrink-0 place-items-center rounded-full font-bold text-white"
       style={{
         width: size, height: size, fontSize: size * 0.38,
-        background: color ?? `linear-gradient(135deg, hsl(${hue} 80% 55%), hsl(${(hue + 60) % 360} 80% 45%))`,
-        boxShadow: '0 0 0 2px rgba(255,255,255,0.12)',
+        background: color ?? `hsl(${hue} 45% 42%)`,
+        boxShadow: 'inset 0 -2px 0 rgba(0,0,0,0.25)',
       }}
       aria-hidden
     >
@@ -108,13 +108,13 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           onMouseDown={(e) => e.target === e.currentTarget && onClose?.()}
         >
           <motion.div
             role="dialog" aria-modal
-            className={clsx('glass neon-ring max-h-[90vh] w-full overflow-auto rounded-2xl p-6', wide ? 'max-w-3xl' : 'max-w-md')}
+            className={clsx('glass neon-ring max-h-[90vh] w-full overflow-auto rounded-xl p-6', wide ? 'max-w-3xl' : 'max-w-md')}
             initial={{ y: 20, scale: 0.97, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 10, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 380, damping: 30 }}
           >
@@ -148,10 +148,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={t.id}
               initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 10, opacity: 0 }}
               className={clsx(
-                'pointer-events-auto flex max-w-md items-center gap-3 rounded-xl border px-4 py-3 text-sm shadow-2xl backdrop-blur-xl',
-                t.kind === 'err' && 'border-red-400/30 bg-red-950/80 text-red-100',
-                t.kind === 'ok' && 'border-emerald-400/30 bg-emerald-950/80 text-emerald-100',
-                t.kind === 'info' && 'border-white/10 bg-slate-900/85 text-text',
+                'pointer-events-auto flex max-w-md items-center gap-3 rounded-lg border px-4 py-3 text-sm shadow-2xl',
+                t.kind === 'err' && 'border-red-500/40 bg-[#2a1416] text-red-100',
+                t.kind === 'ok' && 'border-emerald-500/40 bg-[#122219] text-emerald-100',
+                t.kind === 'info' && 'border-line-2 bg-panel-2 text-text',
               )}
             >
               <span className="flex-1">{t.text}</span>
@@ -194,7 +194,7 @@ export function formatChips(n: number | null | undefined): string {
 
 export function Badge({ children, color }: { children: ReactNode; color?: string }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider" style={color ? { color, borderColor: `${color}55` } : undefined}>
+    <span className="inline-flex items-center rounded-md bg-white/[0.06] px-2 py-0.5 text-xs font-medium text-muted" style={color ? { color } : undefined}>
       {children}
     </span>
   );

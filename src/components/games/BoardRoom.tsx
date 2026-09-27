@@ -207,7 +207,7 @@ export default function BoardRoom({ room }: { room: Room }) {
           )}
           {s.status === 'finished' && result && <div className="mt-2 text-sm text-muted">{reasonText(result.reason, s.game)}</div>}
           {s.drawOffer !== null && s.status === 'playing' && mySide !== null && s.drawOffer !== mySide && (
-            <div className="mt-3 flex items-center gap-2 rounded-lg bg-cyan-400/10 px-3 py-2 text-sm">
+            <div className="mt-3 flex items-center gap-2 rounded-lg bg-accent/10 px-3 py-2 text-sm">
               <span className="flex-1">Đối thủ xin hòa</span>
               <Button size="sm" variant="success" onClick={() => act('draw')}>Đồng ý</Button>
               <Button size="sm" variant="ghost" onClick={() => act('decline')}>Từ chối</Button>
@@ -216,7 +216,7 @@ export default function BoardRoom({ room }: { room: Room }) {
           <div className="mt-4">
             <MoveList sans={s.sans} pairs={s.game !== 'caro' && s.game !== 'dots'} />
           </div>
-          {premove && <div className="mt-2 text-xs text-cyan-200">Đã đặt trước nước {premove} <button className="underline" onClick={() => setPremove(null)}>hủy</button></div>}
+          {premove && <div className="mt-2 text-xs text-accent">Đã đặt trước nước {premove} <button className="underline" onClick={() => setPremove(null)}>hủy</button></div>}
           {mySide !== null && s.status === 'playing' && (
             <div className="mt-4 flex flex-wrap gap-2">
               <Button size="sm" variant="ghost" disabled={s.moves.length < 2 || s.drawOffer === mySide} onClick={() => act('draw')}>

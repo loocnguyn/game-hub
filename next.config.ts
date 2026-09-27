@@ -5,6 +5,7 @@ import type { NextConfig } from 'next';
 // next dev only serves the file path, so it gets a redirect here.
 const nextConfig: NextConfig = {
   output: 'export',
+  devIndicators: false,
   experimental: {
     // The dev cache can grow to hundreds of MB; this machine is short on disk space.
     turbopackFileSystemCacheForDev: false,

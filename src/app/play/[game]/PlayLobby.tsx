@@ -11,6 +11,7 @@ import { gameById } from '@/lib/games';
 import { useWhere } from '@/lib/presence';
 import { RULES_TEXT } from '@/lib/rulesText';
 import { JoinByCode, OpenRooms } from '@/components/room/Lobby';
+import { GameBanner } from '@/components/GameBanner';
 
 type Preset = { base: number; inc: number; label: string; group: string };
 const CHESS_PRESETS: Preset[] = [
@@ -56,7 +57,7 @@ export default function PlayLobby({ game }: { game: string }) {
   const [busy, setBusy] = useState(false);
 
   if (!info || !['chess', 'xiangqi', 'caro', 'dots', 'tienlen', 'monopoly'].includes(game)) {
-    return <Shell><Panel className="mx-auto mt-16 max-w-md p-8 text-center">Không có trò này. <Link className="text-cyan-300 underline" href="/hub">Về sảnh</Link></Panel></Shell>;
+    return <Shell><Panel className="mx-auto mt-16 max-w-md p-8 text-center">Không có trò này. <Link className="text-accent underline" href="/hub">Về sảnh</Link></Panel></Shell>;
   }
   if (!authed) return <Shell><div className="grid min-h-[50vh] place-items-center"><Spinner /></div></Shell>;
 
@@ -81,13 +82,7 @@ export default function PlayLobby({ game }: { game: string }) {
 
   return (
     <Shell>
-      <div className="mb-6 flex items-center gap-4">
-        <div className="grid h-16 w-16 place-items-center rounded-2xl text-4xl text-white" style={{ background: `linear-gradient(135deg, ${info.accent}, ${info.accent2})`, boxShadow: `0 10px 40px -10px ${info.accent}` }}>{info.icon}</div>
-        <div>
-          <h1 className="font-display text-3xl font-bold">{info.name}</h1>
-          <p className="text-muted">{info.tagline}</p>
-        </div>
-      </div>
+      <GameBanner game={info} />
       <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
         <Panel className="p-6">
           <h2 className="font-display text-xl font-bold">Tạo phòng</h2>
@@ -97,7 +92,7 @@ export default function PlayLobby({ game }: { game: string }) {
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
                   {presets.map((p, i) => (
                     <button key={p.label} type="button" onClick={() => setPreset(i)}
-                      className={clsx('rounded-xl border px-2 py-3 text-center transition', i === preset ? 'border-cyan-400/60 bg-cyan-400/10' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.07]')}>
+                      className={clsx('rounded-xl border px-2 py-3 text-center transition', i === preset ? 'border-accent/60 bg-accent/10' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.07]')}>
                       <div className="font-display text-lg font-bold">{p.label}</div>
                       <div className="text-[11px] text-muted">{p.group}</div>
                     </button>

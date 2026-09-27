@@ -42,7 +42,7 @@ export function TetrisSettings({ open, onClose, onSaved }: { open: boolean; onCl
 
   const slider = (label: string, key: keyof HandlingMs, min: number, max: number, step: number, fmt: (v: number) => string) => (
     <label className="block">
-      <div className="flex justify-between text-sm"><span>{label}</span><span className="font-mono text-cyan-200">{fmt(handling[key])}</span></div>
+      <div className="flex justify-between text-sm"><span>{label}</span><span className="font-mono text-accent">{fmt(handling[key])}</span></div>
       <input type="range" min={min} max={max} step={step} value={handling[key]} onChange={(e) => setHandling({ ...handling, [key]: Number(e.target.value) })} className="w-full accent-cyan-400" />
     </label>
   );
@@ -65,11 +65,11 @@ export function TetrisSettings({ open, onClose, onSaved }: { open: boolean; onCl
               <button
                 key={a}
                 onClick={() => setListening(a)}
-                className={clsx('flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm transition', listening === a ? 'border-cyan-400 bg-cyan-400/10' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.07]')}
+                className={clsx('flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm transition', listening === a ? 'border-accent bg-accent/10' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.07]')}
               >
                 <span>{ACTION_LABELS[a]}</span>
                 <span className="flex gap-1">
-                  {listening === a ? <span className="text-cyan-200">Bấm phím…</span> : keys[a].map((c) => <kbd key={c} className="rounded bg-white/10 px-2 py-0.5 font-mono text-xs">{keyLabel(c)}</kbd>)}
+                  {listening === a ? <span className="text-accent">Bấm phím…</span> : keys[a].map((c) => <kbd key={c} className="rounded bg-white/10 px-2 py-0.5 font-mono text-xs">{keyLabel(c)}</kbd>)}
                 </span>
               </button>
             ))}

@@ -194,9 +194,11 @@ test('cờ tỉ phú: lobby, start, roll dice (3D), buy or skip, end turn', asyn
       const roll = p.getByRole('button', { name: 'Đổ xúc xắc' });
       const skip = p.getByRole('button', { name: 'Không mua' });
       const end = p.getByRole('button', { name: 'Kết thúc lượt' });
-      if (await roll.isVisible()) { await roll.click(); await p.waitForTimeout(1200); }
-      else if (await skip.isVisible()) await skip.click();
-      else if (await end.isVisible()) await end.click();
+      // Buttons can disappear between the check and the click when the other player's move lands; just try again next step.
+      const tap = (b: typeof roll) => b.click({ timeout: 3000 }).catch(() => {});
+      if (await roll.isVisible()) { await tap(roll); await p.waitForTimeout(1200); }
+      else if (await skip.isVisible()) await tap(skip);
+      else if (await end.isVisible()) await tap(end);
     }
     await A.page.waitForTimeout(500);
   }

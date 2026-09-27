@@ -87,7 +87,7 @@ export default function ChessBoard2D({ fen, mySide, canMove, lastMove, check, on
   const t = THEMES[theme];
   return (
     <div className="relative">
-      <div className="overflow-hidden rounded-2xl shadow-[0_30px_80px_-30px_rgba(117,99,214,0.8)] ring-1 ring-white/10">
+      <div className="overflow-hidden rounded-2xl ring-1 ring-white/10">
         <Chessboard
           options={{
             id: 'hub-chess',

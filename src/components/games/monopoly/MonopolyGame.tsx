@@ -51,7 +51,7 @@ function Square({ i, s, onClick, highlight }: { i: number; s: MonopolyPublic; on
       style={{ gridRow: r + 1, gridColumn: c + 1 }}
       className={clsx(
         'relative flex overflow-hidden border border-black/40 bg-[#f4efe1] text-[#1c1917] transition hover:z-10 hover:scale-[1.04] hover:shadow-xl',
-        highlight && 'z-10 ring-2 ring-cyan-400',
+        highlight && 'z-10 ring-2 ring-accent',
         sd === 'bottom' && 'flex-col', sd === 'top' && 'flex-col-reverse', sd === 'left' && 'flex-row-reverse', sd === 'right' && 'flex-row',
       )}
     >
@@ -201,7 +201,7 @@ export default function MonopolyGame({ room }: { room: Room }) {
             {s.players.map((p, i) => {
               const owned = OWNABLE.filter((q) => s.props[q].owner === i);
               return (
-                <li key={p.id} className={clsx('rounded-xl border px-3 py-2', s.turn === i && s.status === 'playing' ? 'border-cyan-400/50 bg-cyan-400/5' : 'border-white/10 bg-white/[0.03]', p.bankrupt && 'opacity-40')}>
+                <li key={p.id} className={clsx('rounded-xl border px-3 py-2', s.turn === i && s.status === 'playing' ? 'border-accent/50 bg-accent/5' : 'border-white/10 bg-white/[0.03]', p.bankrupt && 'opacity-40')}>
                   <div className="flex items-center gap-2">
                     <Avatar name={p.name} size={30} color={PLAYER_COLORS[p.color]} />
                     <div className="min-w-0 flex-1">
@@ -213,7 +213,7 @@ export default function MonopolyGame({ room }: { room: Room }) {
                     <div className="mt-1.5 flex flex-wrap gap-1">
                       {owned.map((q) => (
                         <button key={q} onClick={() => setInfo(q)} className={clsx('rounded px-1.5 py-0.5 text-[10px] font-semibold text-black', s.props[q].mortgaged && 'opacity-40 line-through')} style={{ background: BOARD[q].group ? GROUP_COLORS[BOARD[q].group!] : '#cbd5e1' }}>
-                          {BOARD[q].name}{s.props[q].houses ? ` ${s.props[q].houses === 5 ? '🏨' : '🏠' + s.props[q].houses}` : ''}
+                          {BOARD[q].name}{s.props[q].houses ? ` · ${s.props[q].houses === 5 ? 'khách sạn' : `${s.props[q].houses} nhà`}` : ''}
                         </button>
                       ))}
                     </div>
@@ -235,7 +235,7 @@ export default function MonopolyGame({ room }: { room: Room }) {
               <table className="w-full text-left">
                 <tbody>
                   {['Đất trống', '1 nhà', '2 nhà', '3 nhà', '4 nhà', 'Khách sạn'].map((l, k) => (
-                    <tr key={l} className={clsx(infoPs?.houses === k && 'text-cyan-200')}><td className="py-0.5">{l}</td><td className="text-right">{money(infoSq.rents![k])}</td></tr>
+                    <tr key={l} className={clsx(infoPs?.houses === k && 'text-accent')}><td className="py-0.5">{l}</td><td className="text-right">{money(infoSq.rents![k])}</td></tr>
                   ))}
                   <tr><td className="py-0.5 text-muted">Giá mỗi nhà</td><td className="text-right text-muted">{money(infoSq.house!)}</td></tr>
                 </tbody>

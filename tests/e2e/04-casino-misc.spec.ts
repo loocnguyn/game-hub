@@ -128,7 +128,7 @@ test('mobile viewport: hub and tetris lay out without horizontal scroll', async 
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: await page.context().storageState() });
   const m = await ctx.newPage();
   await m.goto('/hub');
-  await expect(m.getByText('Tetris Neon')).toBeVisible();
+  await expect(m.getByRole('heading', { name: 'Tetris Neon', level: 3 })).toBeVisible();
   const overflow = await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   expect(overflow).toBe(false);
   await m.screenshot({ path: '.tmp/e2e-shots/37-mobile-hub.png' });

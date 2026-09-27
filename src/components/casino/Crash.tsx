@@ -66,7 +66,7 @@ export default function Crash() {
           <CrashScene phase={scene.phase} multiplier={mult} />
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <div className="text-center">
-              <div className={clsx('font-display text-7xl font-black tabular-nums drop-shadow-[0_0_30px_rgba(168,85,247,0.8)]', state.phase === 'result' ? 'text-rose-400' : 'text-white')}>
+              <div className={clsx('font-display text-7xl font-black tabular-nums', state.phase === 'result' ? 'text-rose-400' : 'text-white')}>
                 {betting ? `${Math.max(0, Math.ceil((state.bettingEndsAt - serverNow()) / 1000))}s` : `${mult.toFixed(2)}x`}
               </div>
               <div className="mt-1 text-sm text-white/70">{betting ? 'Chuẩn bị phóng' : running ? 'Đang bay…' : 'Nổ rồi!'}</div>

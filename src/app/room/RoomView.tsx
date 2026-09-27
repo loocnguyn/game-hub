@@ -38,7 +38,7 @@ export default function RoomView({ code }: { code: string }) {
   }, [room, profile, toast]);
 
   if (!authed || (!room.view && !room.error)) {
-    return <Shell><div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-cyan-300" /></div></Shell>;
+    return <Shell><div className="grid min-h-[60vh] place-items-center"><Spinner className="h-8 w-8 text-accent" /></div></Shell>;
   }
   if (room.gone || (!room.view && room.error)) {
     return (

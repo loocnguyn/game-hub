@@ -56,7 +56,7 @@ export default function XiangqiBoard({ fen, mySide, canMove, lastMove, check, on
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl shadow-[0_30px_80px_-30px_rgba(220,38,38,0.6)] ring-1 ring-white/10">
+    <div className="overflow-hidden rounded-2xl ring-1 ring-white/10">
       <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full select-none" style={{ background: 'linear-gradient(135deg, #f1d9a7, #e3bf7e)' }}>
         <defs>
           <radialGradient id="xq-piece" cx="40%" cy="35%" r="70%">

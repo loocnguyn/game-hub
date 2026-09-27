@@ -135,7 +135,7 @@ function Stat({ label, value, big }: { label: string; value: ReactNode; big?: bo
   return (
     <div>
       <div className="text-[10px] font-bold uppercase tracking-widest text-dim">{label}</div>
-      <div className={clsx('font-display font-bold tabular-nums', big ? 'text-xl text-cyan-200' : 'text-base')}>{value}</div>
+      <div className={clsx('font-display font-bold tabular-nums', big ? 'text-xl text-accent' : 'text-base')}>{value}</div>
     </div>
   );
 }

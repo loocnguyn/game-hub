@@ -53,7 +53,7 @@ function Ratings() {
           </thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={r.user_id} className={clsx('border-t border-white/5', r.user_id === profile?.id && 'bg-cyan-400/10')}>
+              <tr key={r.user_id} className={clsx('border-t border-white/5', r.user_id === profile?.id && 'bg-accent/10')}>
                 <td className="py-2 font-display font-bold text-dim">{i + 1}</td>
                 <td><div className="flex items-center gap-2"><Avatar name={r.name ?? '?'} size={26} />{r.name}</div></td>
                 <td className="text-right font-display font-bold">{Math.round(r.rating)}{r.rd > 110 && <span className="text-dim">?</span>}</td>

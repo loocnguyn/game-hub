@@ -23,7 +23,7 @@ export default function DotsBoard({ moves, settings, canMove, lastMove, onMove, 
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b0d1f] shadow-[0_30px_80px_-30px_rgba(52,211,153,0.5)]">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b0d1f]">
       <svg viewBox={`0 0 ${size} ${size}`} className="block h-auto w-full select-none">
         {Array.from({ length: n * n }, (_, i) => {
           const owner = game.boxes[i];

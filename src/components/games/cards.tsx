@@ -18,7 +18,7 @@ export function PlayingCard({
         'relative shrink-0 select-none rounded-lg border bg-gradient-to-br from-white to-slate-100 font-bold shadow-[0_6px_18px_-6px_rgba(0,0,0,0.7)] transition-all duration-150',
         dims,
         red ? 'text-rose-600' : 'text-slate-900',
-        selected ? '-translate-y-4 border-cyan-400 ring-2 ring-cyan-300' : 'border-slate-300',
+        selected ? '-translate-y-4 border-accent ring-2 ring-accent' : 'border-slate-300',
         onClick && !selected && 'hover:-translate-y-1.5',
         dim && 'opacity-60',
         className,

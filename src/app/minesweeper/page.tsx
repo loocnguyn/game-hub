@@ -13,6 +13,28 @@ import { randomSeed } from '@shared/rng.ts';
 
 const NUM_COLORS = ['', '#60a5fa', '#4ade80', '#f87171', '#a78bfa', '#fb923c', '#22d3ee', '#f472b6', '#e2e8f0'];
 
+function MineMark() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-[70%] w-[70%]" aria-label="mìn">
+      <g stroke="#0b0c10" strokeWidth="2.4" strokeLinecap="round">
+        <path d="M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3 5.3 18.7" />
+      </g>
+      <circle cx="12" cy="12" r="6.5" fill="#0b0c10" />
+      <circle cx="9.8" cy="9.8" r="1.7" fill="#fff" />
+    </svg>
+  );
+}
+
+function FlagMark() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-[70%] w-[70%]" aria-label="cờ">
+      <path d="M8 3v17" stroke="#f1f1f1" strokeWidth="2" strokeLinecap="round" />
+      <path d="M8.8 3.5 18.5 7.5 8.8 11.5Z" fill="#ef4444" />
+      <path d="M5 20.5h7" stroke="#f1f1f1" strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function MinesweeperPage() {
   const authed = useRequireAuth();
   useWhere('Đang chơi Dò mìn');
@@ -96,7 +118,7 @@ export default function MinesweeperPage() {
   if (!authed) return <Shell><div className="grid min-h-[50vh] place-items-center"><Spinner /></div></Shell>;
   const d = DIFFICULTIES[difficulty];
   const elapsed = endedMs ?? (startedAt ? now - startedAt : 0);
-  const face = !game ? '🙂' : game.over ? (game.won ? '😎' : '💥') : pressed !== null ? '😮' : '🙂';
+  const status = !game || !game.over ? 'Ván mới' : game.won ? 'Thắng · ván mới' : 'Thua · ván mới';
   const cell = difficulty === 'expert' ? 'min(3.1vw, 30px)' : difficulty === 'intermediate' ? 'min(5.2vw, 34px)' : 'min(9vw, 44px)';
 
   return (
@@ -110,8 +132,8 @@ export default function MinesweeperPage() {
           <Panel className="inline-block p-4">
             <div className="mb-3 flex items-center justify-between gap-4">
               <div className="font-display rounded-lg bg-black/50 px-3 py-1 text-2xl font-bold tabular-nums text-rose-400">{String(d.mines - (game?.flags ?? 0)).padStart(3, '0')}</div>
-              <button onClick={() => newGame(difficulty)} className="grid h-11 w-11 place-items-center rounded-xl bg-white/10 text-2xl transition hover:scale-110 hover:bg-white/20" title="Ván mới">{face}</button>
-              <div className="font-display rounded-lg bg-black/50 px-3 py-1 text-2xl font-bold tabular-nums text-cyan-300">{formatMs(elapsed)}</div>
+              <button onClick={() => newGame(difficulty)} className={clsx('raised h-10 rounded-lg px-4 text-sm font-semibold transition hover:brightness-110', game?.over ? (game.won ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white') : 'bg-[#4a5263] text-white')}>{status}</button>
+              <div className="font-display rounded-lg bg-black/50 px-3 py-1 text-2xl font-bold tabular-nums text-accent">{formatMs(elapsed)}</div>
             </div>
             {!game ? <div className="grid h-60 place-items-center"><Spinner /></div> : (
               <div
@@ -132,17 +154,16 @@ export default function MinesweeperPage() {
                       style={{ width: cell, height: cell, fontSize: `calc(${cell} * 0.55)` }}
                       className={clsx(
                         'font-display grid place-items-center rounded-[4px] font-bold transition-colors',
-                        revealed ? (i === game.exploded ? 'bg-red-600' : 'bg-[#10132a]') : 'bg-gradient-to-br from-[#3a3f78] to-[#262a55] shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] hover:from-[#4a50a0] hover:to-[#30356a]',
-                        pressed === i && !revealed && 'from-[#2b2f5c] to-[#1d2046]',
+                        revealed ? (i === game.exploded ? 'bg-red-600' : 'bg-[#1a1d24]') : pressed === i ? 'bg-[#3d4452]' : 'bg-[#4a5263] shadow-[inset_0_2px_0_rgba(255,255,255,0.18),inset_0_-3px_0_rgba(0,0,0,0.3)] hover:bg-[#566074]',
                       )}
                       onMouseDown={(e) => { if (e.button === 0) setPressed(i); }}
                       onMouseUp={(e) => { setPressed(null); if (e.button === 0) reveal(i); else if (e.button === 2) flag(i); else if (e.button === 1) { if (game.chord(i).length) sfx.pop(); afterAction(game, false); } }}
                       onTouchStart={() => { longPress.current = window.setTimeout(() => { longPress.current = null; flag(i); }, 380); }}
                       onTouchEnd={(e) => { if (longPress.current) { clearTimeout(longPress.current); longPress.current = null; e.preventDefault(); reveal(i); } }}
                     >
-                      {revealed && !isMine && game.adj[i] > 0 && <span style={{ color: NUM_COLORS[game.adj[i]], textShadow: `0 0 10px ${NUM_COLORS[game.adj[i]]}` }}>{game.adj[i]}</span>}
-                      {(showMine || (revealed && isMine)) && <span>💣</span>}
-                      {st === FLAGGED && !wrongFlag && <span className="text-rose-400">⚑</span>}
+                      {revealed && !isMine && game.adj[i] > 0 && <span style={{ color: NUM_COLORS[game.adj[i]] }}>{game.adj[i]}</span>}
+                      {(showMine || (revealed && isMine)) && <MineMark />}
+                      {st === FLAGGED && !wrongFlag && <FlagMark />}
                       {wrongFlag && <span className="text-rose-300">✕</span>}
                     </button>
                   );

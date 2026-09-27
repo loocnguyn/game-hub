@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #05050d;
-  --bg-2: #0a0a18;
-  --panel: rgba(18, 18, 38, 0.72);
-  --panel-solid: #11112a;
-  --panel-2: rgba(28, 28, 58, 0.8);
-  --line: rgba(255, 255, 255, 0.08);
-  --line-2: rgba(255, 255, 255, 0.16);
-  --text: #eef0ff;
-  --muted: #9aa0c3;
-  --dim: #6b7096;
+  --bg: #0e1015;
+  --bg-2: #13161c;
+  --panel: #161920;
+  --panel-solid: #161920;
+  --panel-2: #1c2029;
+  --line: #262a34;
+  --line-2: #363b47;
+  --text: #ecebe6;
+  --muted: #a4a49d;
+  --dim: #71727b;
+  --accent: #f5b43c;
+  --accent-ink: #1d1405;
   --cyan: #22d3ee;
   --violet: #a855f7;
   --pink: #ec4899;
@@ -36,6 +38,10 @@
   --color-green: var(--green);
   --color-red: var(--red);
   --color-gold: var(--gold);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-panel-2: var(--panel-2);
+  --color-line-2: var(--line-2);
   --font-sans: var(--font-body), system-ui, sans-serif;
   --font-display: var(--font-display), var(--font-body), sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', monospace;
@@ -55,48 +61,49 @@ body {
 body {
   font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(168, 85, 247, 0.16), transparent 60%),
-    radial-gradient(900px 500px at 110% 10%, rgba(34, 211, 238, 0.12), transparent 60%),
-    radial-gradient(800px 600px at 50% 120%, rgba(236, 72, 153, 0.1), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
 }
 
 ::selection {
-  background: rgba(168, 85, 247, 0.45);
+  background: rgba(245, 180, 60, 0.35);
 }
 
 .font-display {
   font-family: var(--font-display), var(--font-body), sans-serif;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 
+/* Solid surfaces. (Class names kept from the first version so every page picks this up.) */
 .glass {
   background: var(--panel);
   border: 1px solid var(--line);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
 }
 
 .text-gradient {
-  background: linear-gradient(92deg, #67e8f9 0%, #c084fc 45%, #f472b6 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
 }
 
 .neon-ring {
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 10px 40px -12px rgba(0, 0, 0, 0.8);
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 18px 40px -24px rgba(0, 0, 0, 0.9);
 }
 
 .grid-bg {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background: none;
+}
+
+/* Raised, pressable look for buttons and tiles. */
+.raised {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.25),
+    0 6px 14px -8px rgba(0, 0, 0, 0.8);
+}
+.raised:active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
 /* Scrollbars */
@@ -105,13 +112,17 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: #2c313c;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
+@keyframes drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
 @keyframes float-slow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
@@ -140,7 +151,7 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--cyan);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -155,4 +166,10 @@ textarea {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+  accent-color: var(--accent);
 }

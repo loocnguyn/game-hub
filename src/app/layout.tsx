@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Be_Vietnam_Pro, Chakra_Petch } from 'next/font/google';
+import { Be_Vietnam_Pro, Bricolage_Grotesque } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
@@ -8,10 +8,9 @@ const body = Be_Vietnam_Pro({
   subsets: ['latin', 'vietnamese'],
   weight: ['400', '500', '600', '700', '800'],
 });
-const display = Chakra_Petch({
+const display = Bricolage_Grotesque({
   variable: '--font-display',
   subsets: ['latin', 'vietnamese'],
-  weight: ['500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -20,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#05050d',
+  themeColor: '#0e1015',
   width: 'device-width',
   initialScale: 1,
 };

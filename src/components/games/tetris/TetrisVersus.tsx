@@ -229,7 +229,7 @@ export default function TetrisVersus({ room }: { room: Room }) {
   }
 
   const overlay = mySide === null ? null
-    : countdown > 0 ? <div className="font-display text-8xl font-black text-cyan-200 drop-shadow-[0_0_30px_rgba(34,211,238,0.8)]">{countdown}</div>
+    : countdown > 0 ? <div className="font-display text-8xl font-black text-accent">{countdown}</div>
     : dead && s.status === 'playing' ? <div className="text-center"><div className="font-display text-3xl font-bold text-rose-300">Thua ván này</div><div className="mt-1 text-muted">Chờ ván tiếp theo…</div></div>
     : timeUp && s.status === 'playing' ? <div className="font-display text-3xl font-bold">Hết giờ!</div>
     : s.status === 'finished' ? <div className="text-center"><div className="font-display text-3xl font-bold">{s.result?.winner === null ? 'Hòa' : s.result?.winner === mySide ? 'Bạn thắng!' : 'Bạn thua'}</div></div>

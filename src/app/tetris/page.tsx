@@ -9,6 +9,8 @@ import { useRequireAuth } from '@/lib/auth';
 import { useWhere } from '@/lib/presence';
 import { api } from '@/lib/api';
 import { sfx } from '@/lib/sfx';
+import { GameBanner } from '@/components/GameBanner';
+import { gameById } from '@/lib/games';
 import { useTetrisLoop } from '@/components/games/tetris/useTetrisLoop';
 import { Playfield, popupFor } from '@/components/games/tetris/Playfield';
 import { TetrisSettings } from '@/components/games/tetris/SettingsModal';
@@ -121,7 +123,7 @@ function SoloGame({ onExit }: { onExit: () => void }) {
     return () => { window.removeEventListener('keydown', k); window.removeEventListener('blur', blur); };
   }, [phase]);
 
-  const overlay = phase === 'loading' ? <Spinner className="h-8 w-8 text-cyan-300" />
+  const overlay = phase === 'loading' ? <Spinner className="h-8 w-8 text-accent" />
     : paused ? (
       <div className="text-center">
         <div className="font-display text-3xl font-bold">Tạm dừng</div>
@@ -134,7 +136,7 @@ function SoloGame({ onExit }: { onExit: () => void }) {
     ) : phase === 'over' && result ? (
       <div className="w-64 text-center">
         <div className="font-display text-3xl font-bold text-rose-300">Hết game</div>
-        <div className="font-display mt-3 text-4xl font-black text-cyan-200">{result.score.toLocaleString('vi-VN')}</div>
+        <div className="font-display mt-3 text-4xl font-black text-accent">{result.score.toLocaleString('vi-VN')}</div>
         <div className="mt-1 text-sm text-muted">{result.lines} hàng · level {result.level} · {Math.floor(result.ms / 60000)}:{String(Math.floor((result.ms % 60000) / 1000)).padStart(2, '0')}</div>
         <div className="mt-3 text-sm">
           {result.saved === 'saving' && <span className="text-muted">Đang lưu điểm…</span>}
@@ -156,7 +158,7 @@ function SoloGame({ onExit }: { onExit: () => void }) {
         <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-muted">
           <Button size="sm" variant="ghost" onClick={() => setPaused(true)} disabled={phase !== 'playing'}>Tạm dừng (Esc)</Button>
           <Button size="sm" variant="ghost" onClick={() => { setPaused(true); setSettingsOpen(true); }}>Cài đặt</Button>
-          <span className="hidden sm:inline">Phím: {keyLabel(loadKeys()[A.LEFT][0])}{keyLabel(loadKeys()[A.RIGHT][0])} di chuyển · {keyLabel(loadKeys()[A.CW][0])} xoay · {keyLabel(loadKeys()[A.HARD][0])} thả · {keyLabel(loadKeys()[A.HOLD][0])} giữ</span>
+          <span className="hidden sm:inline">Phím: {keyLabel(loadKeys()[A.LEFT][0])}{keyLabel(loadKeys()[A.RIGHT][0])} di chuyển · {keyLabel(loadKeys()[A.CW][0])} xoay · {keyLabel(loadKeys()[A.HARD][0])} thả · {keyLabel(loadKeys()[A.HOLD][0])} giữ · Chuột: bấm trái thả, giữ trái rơi nhanh, phải xoay</span>
         </div>
       </div>
       <LeaderboardPanel game="tetris" mode="infinity" title="Top vô tận" reloadKey={lbKey} extra={(r) => <span className="text-xs text-dim">{String(r.meta?.lines ?? '')} hàng</span>} />
@@ -222,17 +224,12 @@ export default function TetrisPage() {
 
   return (
     <Shell>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-4xl font-bold">Tetris <span className="text-gradient">Neon</span></h1>
-          <p className="text-muted">Chơi vô tận tới khi chán, hoặc đấu 1v1 với bạn bè.</p>
-        </div>
+      <GameBanner game={gameById('tetris')!} subtitle="Chơi vô tận tới khi chán, hoặc đấu 1v1 với bạn bè.">
         <Button variant="ghost" onClick={() => setHelp(true)}>Cách chơi</Button>
-      </div>
+      </GameBanner>
       <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
         <div className="space-y-5">
           <Panel className="relative overflow-hidden p-6">
-            <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-cyan-400/20 blur-3xl" />
             <h2 className="font-display text-xl font-bold">Chơi vô tận</h2>
             <p className="mt-1 text-sm text-muted">Tốc độ tăng mỗi 10 hàng (tối đa ở level 15). Chơi tới khi tràn thì thôi. Điểm được kiểm tra lại trên máy chủ trước khi lên bảng.</p>
             <Button size="lg" className="mt-5" onClick={() => setPlaying(true)}>Bắt đầu</Button>
@@ -249,6 +246,7 @@ export default function TetrisPage() {
         <ul className="list-disc space-y-1.5 pl-5 text-sm text-muted">
           <li>Luật theo chuẩn Tetris hiện đại: xoay SRS, túi 7 khối, giữ khối, khối bóng, T-spin.</li>
           {keys && <li>Phím mặc định: {keyLabel(keys[A.LEFT][0])}/{keyLabel(keys[A.RIGHT][0])} di chuyển, {keyLabel(keys[A.SOFT][0])} rơi nhanh, {keyLabel(keys[A.HARD][0])} thả, {keyLabel(keys[A.CW][0])} / {keyLabel(keys[A.CCW][0])} xoay, {keyLabel(keys[A.R180][0])} xoay 180°, {keyLabel(keys[A.HOLD][0])} giữ.</li>}
+          <li>Chuột: bấm chuột trái để thả thẳng xuống, giữ chuột trái để khối rơi nhanh, chuột phải để xoay.</li>
           <li>Điểm: Single 100, Double 300, Triple 500, Tetris 800, T-spin Double 1200… nhân với level. Back-to-back x1.5, combo +50 x combo x level.</li>
           <li>Đổi phím và độ nhạy (DAS/ARR) trong Cài đặt lúc đang chơi.</li>
         </ul>

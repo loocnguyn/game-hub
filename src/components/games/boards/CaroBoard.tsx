@@ -13,7 +13,7 @@ export default function CaroBoard({ moves, settings, canMove, mySide, lastMove, 
 
   return (
     <div
-      className="grid aspect-square w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0d1024] p-2 shadow-[0_30px_80px_-30px_rgba(56,189,248,0.6)]"
+      className="grid aspect-square w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0d1024] p-2"
       style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
       onMouseLeave={() => setHover(null)}
     >

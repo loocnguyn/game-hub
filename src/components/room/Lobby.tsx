@@ -47,13 +47,13 @@ export function OpenRooms({ game }: { game: string }) {
         <ul className="mt-3 space-y-2">
           {rooms.map((r) => (
             <li key={r.code}>
-              <Link href={`/room?code=${r.code}`} className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] px-3 py-2 transition hover:border-cyan-400/30 hover:bg-white/[0.06]">
+              <Link href={`/room?code=${r.code}`} className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] px-3 py-2 transition hover:border-accent/30 hover:bg-white/[0.06]">
                 <Avatar name={roomHost(r)} size={32} />
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-semibold">{roomHost(r)}</div>
                   <div className="truncate text-xs text-muted">{roomSummary(r)}</div>
                 </div>
-                <span className="font-mono text-sm text-cyan-200">{r.code}</span>
+                <span className="font-mono text-sm text-accent">{r.code}</span>
               </Link>
             </li>
           ))}

@@ -1,14 +1,12 @@
 'use client';
-import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { clsx } from 'clsx';
 import { useAuth } from '@/lib/auth';
-import { GAMES } from '@/lib/games';
+import { GAMES, coverOf } from '@/lib/games';
+import { LogoMark } from '@/components/TopBar';
 import { Button, Field, inputClass, Panel, Segmented, Spinner } from '@/components/ui';
-
-const HeroScene = dynamic(() => import('@/components/three/HeroScene'), { ssr: false });
 
 const USERNAME_RE = /^[a-z0-9_.]{3,20}$/;
 
@@ -44,7 +42,7 @@ function AuthCard() {
   }
 
   return (
-    <Panel className="w-full max-w-md p-7">
+    <Panel className="w-full max-w-md p-7 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.9)]">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="font-display text-2xl font-bold">{mode === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}</h2>
         <Segmented
@@ -80,6 +78,28 @@ function AuthCard() {
   );
 }
 
+function CoverWall() {
+  // Three rows of covers on a tilted plane, drifting slowly sideways.
+  const games = GAMES.filter((g) => !g.comingSoon);
+  const rows = [games.slice(0, 5), games.slice(5, 10), games.slice(9, 14).concat(games.slice(0, 1))];
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden [perspective:1400px]" aria-hidden>
+      <div className="absolute left-[38%] top-1/2 w-[1500px] -translate-y-1/2 [transform:rotateX(22deg)_rotateY(-24deg)_rotateZ(6deg)] [transform-style:preserve-3d]">
+        {rows.map((row, r) => (
+          <div key={r} className={clsx('mb-5 flex w-max gap-5', r % 2 ? 'animate-[drift_60s_linear_infinite_reverse]' : 'animate-[drift_70s_linear_infinite]')}>
+            {[...row, ...row].map((g, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={`${g.id}-${i}`} src={coverOf(g)} alt="" className="h-[200px] w-[320px] rounded-lg border border-white/10 object-cover shadow-[0_30px_40px_-20px_rgba(0,0,0,0.9)]" />
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-r from-bg from-35% via-bg/80 to-bg/20" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
+    </div>
+  );
+}
+
 function Landing() {
   const { ready, session } = useAuth();
   const router = useRouter();
@@ -92,45 +112,33 @@ function Landing() {
     }
   }, [ready, session, params, router]);
 
+  const count = GAMES.filter((g) => !g.comingSoon).length;
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div className="fixed inset-0 -z-0">
-        <HeroScene />
-      </div>
-      <div className="pointer-events-none fixed inset-0 bg-gradient-to-r from-[#05050d] via-[#05050d]/70 to-transparent" />
-
+      <CoverWall />
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-5">
         <header className="flex h-20 items-center">
-          <div className="flex items-center gap-2.5">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-cyan-400 via-violet-500 to-fuchsia-500 shadow-[0_0_30px_-4px_rgba(168,85,247,0.9)]">
-              <div className="grid grid-cols-2 gap-[3px]">{[0, 1, 2, 3].map((i) => <span key={i} className={clsx('h-2 w-2 rounded-[2px]', i === 3 ? 'bg-white/40' : 'bg-white')} />)}</div>
-            </div>
-            <span className="font-display text-xl font-bold tracking-wide">NEON<span className="text-gradient">ARCADE</span></span>
+          <div className="flex items-center gap-2">
+            <LogoMark size={38} />
+            <span className="font-display text-2xl font-extrabold">Neon Arcade</span>
           </div>
         </header>
 
         <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[1.2fr_1fr]">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-200">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-300" /> {GAMES.filter((g) => !g.comingSoon).length} trò chơi
-            </div>
-            <h1 className="font-display text-5xl font-bold leading-[1.05] sm:text-6xl lg:text-7xl">
-              Neon <span className="text-gradient">Arcade</span>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <p className="font-semibold text-accent">{count} trò chơi · chơi trên trình duyệt</p>
+            <h1 className="font-display mt-3 text-5xl font-extrabold leading-[1.02] sm:text-6xl lg:text-7xl">
+              Sảnh game
+              <br />
+              cho nhóm bạn
             </h1>
-            <p className="mt-5 max-w-xl text-lg text-muted">
+            <p className="mt-5 max-w-lg text-lg text-muted">
               Tetris, cờ vua, cờ tướng, caro, tiến lên, cờ tỉ phú, dò mìn, sudoku và vài game khác. Tạo phòng rồi gửi mã cho bạn bè là chơi được.
             </p>
-            <div className="mt-7 flex flex-wrap gap-2">
-              {GAMES.filter((g) => !g.comingSoon).map((g) => (
-                <span key={g.id} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-sm backdrop-blur" style={{ boxShadow: `0 0 18px -8px ${g.accent}` }}>
-                  <span style={{ color: g.accent }}>{g.icon}</span>{g.name}
-                </span>
-              ))}
-            </div>
           </motion.div>
 
-          <motion.div className="flex justify-center lg:justify-end" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.15 }}>
-            {!ready ? <Spinner className="h-8 w-8 text-cyan-300" /> : session ? <Spinner className="h-8 w-8 text-cyan-300" /> : <AuthCard />}
+          <motion.div className="flex justify-center lg:justify-end" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+            {!ready || session ? <Spinner className="h-8 w-8 text-accent" /> : <AuthCard />}
           </motion.div>
         </div>
 

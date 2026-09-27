@@ -101,14 +101,14 @@ export default function Page2048() {
       <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
         <div className="flex flex-col items-center">
           <div className="mb-4 flex w-full max-w-[520px] items-end justify-between">
-            <h1 className="font-display text-5xl font-black text-amber-300 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]">2048</h1>
+            <h1 className="font-display text-5xl font-black text-amber-300">2048</h1>
             <div className="flex gap-2">
               <div className="glass rounded-xl px-4 py-1.5 text-center"><div className="text-[10px] uppercase tracking-widest text-muted">Điểm</div><div className="font-display text-xl font-bold">{game?.score ?? 0}</div></div>
               <div className="glass rounded-xl px-4 py-1.5 text-center"><div className="text-[10px] uppercase tracking-widest text-muted">Cao nhất</div><div className="font-display text-xl font-bold">{best}</div></div>
             </div>
           </div>
           <div
-            className="relative aspect-square w-full max-w-[520px] touch-none rounded-2xl border border-white/10 bg-[#0b0d1f] p-2 shadow-[0_30px_80px_-30px_rgba(251,191,36,0.4)]"
+            className="relative aspect-square w-full max-w-[520px] touch-none rounded-2xl border border-white/10 bg-[#0b0d1f] p-2"
             onTouchStart={(e) => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }}
             onTouchEnd={(e) => {
               const t0 = touch.current; touch.current = null;

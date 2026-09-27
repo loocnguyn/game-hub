@@ -46,7 +46,7 @@ export function PlayerStrip({
   name, sub, active, clock, color, right,
 }: { name?: string; sub?: ReactNode; active?: boolean; clock?: ReactNode; color?: string; right?: ReactNode }) {
   return (
-    <div className={clsx('flex items-center gap-3 rounded-2xl border px-3 py-2.5 transition', active ? 'border-cyan-400/40 bg-cyan-400/5' : 'border-white/10 bg-white/[0.03]')}>
+    <div className={clsx('flex items-center gap-3 rounded-2xl border px-3 py-2.5 transition', active ? 'border-accent/40 bg-accent/5' : 'border-white/10 bg-white/[0.03]')}>
       {name ? <Avatar name={name} size={40} color={color} /> : <div className="h-10 w-10 rounded-full border-2 border-dashed border-white/20" />}
       <div className="min-w-0 flex-1">
         <div className="truncate font-semibold">{name ?? <span className="text-dim">Đang chờ người chơi…</span>}</div>
@@ -69,7 +69,7 @@ export function InvitePanel({ code, game }: { code: string; game: string }) {
     <Panel className="p-4">
       <div className="text-xs font-semibold uppercase tracking-wider text-muted">Mã phòng</div>
       <div className="mt-1 flex items-center gap-2">
-        <div className="font-display flex-1 rounded-xl bg-black/40 px-3 py-2 text-center text-2xl font-bold tracking-[0.3em] text-cyan-200">{code}</div>
+        <div className="font-display flex-1 rounded-xl bg-black/40 px-3 py-2 text-center text-2xl font-bold tracking-[0.3em] text-accent">{code}</div>
         <Button
           variant="ghost"
           onClick={async () => {

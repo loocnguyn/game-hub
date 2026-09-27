@@ -29,6 +29,24 @@ test('tetris infinity: play, pause, game over, score saved to the leaderboard', 
   await shot(page, '10-tetris-3d');
   const score = async () => Number((await page.locator('text=Điểm').first().locator('xpath=following-sibling::div').innerText()).replace(/\D/g, ''));
   expect(await score()).toBeGreaterThan(0); // hard drops score 2 points per cell
+  // mouse: right click rotates (no context menu), a quick left click hard-drops, holding left soft-drops
+  const board = page.locator('canvas').first();
+  const box = (await board.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: 'right' });
+  let before = await score();
+  await page.mouse.down();
+  await page.waitForTimeout(40);
+  await page.mouse.up();
+  await expect.poll(score).toBeGreaterThanOrEqual(before + 10); // dropped a fresh piece ~18 rows
+  await page.waitForTimeout(200);
+  before = await score();
+  await page.mouse.down();
+  await page.waitForTimeout(700);
+  const mid = await score();
+  await page.mouse.up();
+  expect(mid).toBeGreaterThan(before); // soft drop points while held
+  expect(mid - before).toBeLessThan(30); // ...but no instant hard drop
   // pause / resume
   await page.keyboard.press('Escape');
   await expect(page.getByText('Tạm dừng', { exact: true })).toBeVisible();
@@ -91,12 +109,12 @@ test('minesweeper: first click is safe and opens an area; flags work', async () 
   await page.waitForTimeout(300);
   // several cells revealed, none exploded
   await expect(page.getByText('Trúng mìn!')).toHaveCount(0);
-  const opened = await cells.evaluateAll((els) => els.filter((e) => e.className.includes('bg-[#10132a]')).length);
+  const opened = await cells.evaluateAll((els) => els.filter((e) => e.className.includes('bg-[#1a1d24]')).length);
   expect(opened).toBeGreaterThan(8);
   // right-click flag on an unopened cell
-  const idx = await cells.evaluateAll((els) => els.findIndex((e) => !e.className.includes('bg-[#10132a]')));
+  const idx = await cells.evaluateAll((els) => els.findIndex((e) => !e.className.includes('bg-[#1a1d24]')));
   await cells.nth(idx).click({ button: 'right' });
-  await expect(cells.nth(idx)).toContainText('⚑');
+  await expect(cells.nth(idx).locator('svg[aria-label="cờ"]')).toBeVisible();
   await shot(page, '14-minesweeper');
   // switch difficulty
   await page.getByRole('button', { name: /Khó 30×16/ }).click();

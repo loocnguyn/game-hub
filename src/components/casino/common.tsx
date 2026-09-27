@@ -139,7 +139,7 @@ export function PhaseBar({ state }: { state: CasinoPublic }) {
         {betting ? 'Đặt cược' : state.phase === 'running' ? 'Đang bay' : 'Kết quả'}
       </span>
       <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
-        {betting && <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-[width] duration-100" style={{ width: `${Math.min(100, (left / total) * 100)}%` }} />}
+        {betting && <div className="h-full rounded-full bg-emerald-400 transition-[width] duration-100" style={{ width: `${Math.min(100, (left / total) * 100)}%` }} />}
       </div>
       <span className="font-display w-12 text-right tabular-nums">{betting ? `${Math.ceil(left / 1000)}s` : ''}</span>
       <span className="text-xs text-dim">Ván #{state.round}</span>

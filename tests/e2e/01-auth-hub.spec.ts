@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { expectNoErrors, newUsername, PASSWORD, registerViaUi, shot, watchErrors } from './helpers';
 
-test('landing page renders the 3D scene and the auth form', async ({ page }) => {
+test('landing page renders the cover wall and the auth form', async ({ page }) => {
   const errors = watchErrors(page);
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /Neon/ })).toBeVisible();
-  await expect(page.locator('canvas').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Sảnh game/ })).toBeVisible();
+  await expect(page.locator('img[src="/covers/tetris.jpg"]').first()).toBeVisible();
   await page.waitForTimeout(1500);
   await shot(page, '01-landing');
   expectNoErrors(errors, 'landing');
@@ -42,7 +42,7 @@ test('wrong password shows an error', async ({ page }) => {
 test('register -> hub -> filters -> bonus -> logout -> login again', async ({ page }) => {
   const errors = watchErrors(page);
   const username = await registerViaUi(page, 'hub');
-  await expect(page.getByText('Tetris Neon')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Tetris Neon', level: 3 })).toBeVisible();
   await expect(page.getByText('Cờ tỉ phú')).toBeVisible();
   // chip balance from the server (10.000)
   await expect(page.getByText('10.000').first()).toBeVisible({ timeout: 15_000 });
@@ -50,7 +50,7 @@ test('register -> hub -> filters -> bonus -> logout -> login again', async ({ pa
   // category filter
   await page.getByRole('button', { name: 'Giải đố' }).click();
   await expect(page.getByText('Sudoku')).toBeVisible();
-  await expect(page.getByText('Tetris Neon')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Tetris Neon', level: 3 })).toHaveCount(0);
   await page.getByRole('button', { name: 'Tất cả' }).click();
   // daily bonus
   await page.getByRole('button', { name: /Nhận 5.000 chip/ }).click();

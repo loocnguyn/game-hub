@@ -174,7 +174,7 @@ export default function TienLenTable({ room }: { room: Room }) {
                 <div>
                   <div className="font-semibold">{profile?.name} <span className="text-sm text-emerald-300">{s.scores[mySeat] >= 0 ? '+' : ''}{s.scores[mySeat]} điểm</span></div>
                   <div className="text-xs text-muted">
-                    {s.status === 'playing' ? (myTurn ? <span className="text-cyan-200">Tới lượt bạn · {Math.max(0, Math.ceil(((s.deadline ?? now) - now) / 1000))}s</span> : s.passed[mySeat] ? 'Bạn đã bỏ lượt vòng này' : 'Chờ lượt') : ''}
+                    {s.status === 'playing' ? (myTurn ? <span className="text-accent">Tới lượt bạn · {Math.max(0, Math.ceil(((s.deadline ?? now) - now) / 1000))}s</span> : s.passed[mySeat] ? 'Bạn đã bỏ lượt vòng này' : 'Chờ lượt') : ''}
                     {combo && <span className="ml-2">Đang chọn: {TYPE_NAMES[combo.type]}</span>}
                     {selected.length > 0 && !combo && <span className="ml-2 text-rose-300">Bộ không hợp lệ</span>}
                   </div>

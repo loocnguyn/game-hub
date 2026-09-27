@@ -8,7 +8,18 @@ import { Panel, Spinner, formatChips, useToast } from '@/components/ui';
 import { Chip, ChipSelector, FairnessNote, PhaseBar, SlipBar, TablePlayers, useCasino, useSlip } from './common';
 
 const DiceRoller = dynamic(() => import('@/components/three/DiceRoller'), { ssr: false });
-const FACE = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+const PIPS: Record<number, number[]> = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+
+function DieFace({ n, size = 22 }: { n: number; size?: number }) {
+  return (
+    <span className="inline-grid shrink-0 grid-cols-3 grid-rows-3 rounded-[22%] bg-[#f6f3ea] p-[14%] shadow-[inset_0_-2px_0_rgba(0,0,0,0.2)]" style={{ width: size, height: size }} aria-label={String(n)}>
+      {Array.from({ length: 9 }, (_, i) => (
+        <span key={i} className={clsx('m-auto rounded-full', PIPS[n].includes(i) && (n === 1 ? 'bg-red-600' : 'bg-[#1b1b1f]'))} style={{ width: size * 0.17, height: size * 0.17 }} />
+      ))}
+    </span>
+  );
+}
+const Dice = ({ ns, size }: { ns: number[]; size?: number }) => <span className="inline-flex gap-0.5">{ns.map((n, i) => <DieFace key={i} n={n} size={size} />)}</span>;
 
 function Spot({ k, label, sub, slip, mine, onClick, className, disabled }: {
   k: string; label: React.ReactNode; sub?: string; slip: Record<string, number>; mine: Record<string, number>; onClick: (k: string) => void; className?: string; disabled?: boolean;
@@ -65,20 +76,19 @@ export default function Sicbo() {
         <PhaseBar state={state} />
         <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
           <Panel className="relative overflow-hidden p-0">
-            <div className="h-56 bg-[radial-gradient(ellipse_at_center,#14532d,#052e16)]">
+            <div className="relative h-56 bg-[#1a0b0e]">
               {dice && state.phase === 'result' ? <DiceRoller values={dice} rollKey={state.round} className="h-full w-full" /> : (
                 <div className="grid h-full place-items-center text-center">
-                  <div>
-                    <div className="text-6xl">🎲</div>
-                    <div className="mt-2 text-emerald-100/80">{betting ? 'Mời đặt cược' : 'Đang lắc…'}</div>
-                  </div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/covers/sicbo.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-70" />
+                  <div className="relative rounded-lg bg-black/60 px-4 py-2 font-semibold">{betting ? 'Mời đặt cược' : 'Đang lắc…'}</div>
                 </div>
               )}
             </div>
             {dice && state.phase === 'result' && (
               <div className="absolute inset-x-0 bottom-3 text-center">
                 <span className="font-display rounded-xl bg-black/60 px-4 py-1.5 text-2xl font-bold">
-                  {sum} · {isTriple ? <span className="text-amber-300">BỘ BA</span> : sum! >= 11 ? <span className="text-rose-300">TÀI</span> : <span className="text-cyan-300">XỈU</span>}
+                  {sum} · {isTriple ? <span className="text-amber-300">BỘ BA</span> : sum! >= 11 ? <span className="text-rose-300">TÀI</span> : <span className="text-accent">XỈU</span>}
                 </span>
               </div>
             )}
@@ -105,7 +115,7 @@ export default function Sicbo() {
 
         <Panel className="space-y-3 bg-[radial-gradient(ellipse_at_top,#064e3b,#022c22)] p-4">
           <div className="grid grid-cols-[1fr_2fr_1fr] gap-2">
-            {sp('small', <span className="text-3xl text-cyan-200">XỈU</span>, '4–10 · 1 ăn 1', 'py-5')}
+            {sp('small', <span className="text-3xl text-accent">XỈU</span>, '4–10 · 1 ăn 1', 'py-5')}
             <div className="grid grid-cols-2 gap-2">
               {sp('odd', 'LẺ', '1 ăn 1')}
               {sp('even', 'CHẴN', '1 ăn 1')}
@@ -114,17 +124,17 @@ export default function Sicbo() {
             {sp('big', <span className="text-3xl text-rose-200">TÀI</span>, '11–17 · 1 ăn 1', 'py-5')}
           </div>
           <div className="grid grid-cols-6 gap-2">
-            {[1, 2, 3, 4, 5, 6].map((d) => sp(`double:${d}`, <span className="text-xl">{FACE[d]}{FACE[d]}</span>, '1 ăn 10'))}
-            {[1, 2, 3, 4, 5, 6].map((d) => sp(`triple:${d}`, <span className="text-lg">{FACE[d]}{FACE[d]}{FACE[d]}</span>, '1 ăn 180'))}
+            {[1, 2, 3, 4, 5, 6].map((d) => sp(`double:${d}`, <Dice ns={[d, d]} />, '1 ăn 10'))}
+            {[1, 2, 3, 4, 5, 6].map((d) => sp(`triple:${d}`, <Dice ns={[d, d, d]} size={18} />, '1 ăn 180'))}
           </div>
           <div className="grid grid-cols-7 gap-1.5 sm:grid-cols-14">
             {Array.from({ length: 14 }, (_, i) => i + 4).map((t) => sp(`total:${t}`, t, `1 ăn ${SICBO_TOTAL_PAY[t]}`))}
           </div>
           <div className="grid grid-cols-5 gap-1.5 sm:grid-cols-15">
-            {[1, 2, 3, 4, 5].flatMap((a) => [a + 1, a + 2, a + 3, a + 4, a + 5].filter((b) => b <= 6).map((b) => sp(`combo:${a}-${b}`, <span className="text-lg">{FACE[a]}{FACE[b]}</span>, '1 ăn 5')))}
+            {[1, 2, 3, 4, 5].flatMap((a) => [a + 1, a + 2, a + 3, a + 4, a + 5].filter((b) => b <= 6).map((b) => sp(`combo:${a}-${b}`, <Dice ns={[a, b]} size={18} />, '1 ăn 5')))}
           </div>
           <div className="grid grid-cols-6 gap-2">
-            {[1, 2, 3, 4, 5, 6].map((d) => sp(`single:${d}`, <span className="text-2xl">{FACE[d]}</span>, '1 ăn 1/2/3'))}
+            {[1, 2, 3, 4, 5, 6].map((d) => sp(`single:${d}`, <DieFace n={d} size={26} />, '1 ăn 1/2/3'))}
           </div>
         </Panel>
 

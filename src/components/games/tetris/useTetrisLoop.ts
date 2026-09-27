@@ -5,6 +5,8 @@ import { loadKeys, type KeyMap } from './controls';
 
 const STEP_MS = 1000 / FPS;
 const HELD: Action[] = [A.LEFT, A.RIGHT, A.SOFT];
+/** A left click released within this time is a hard drop; holding longer soft-drops. */
+const MOUSE_TAP_MS = 180;
 
 export interface LoopOptions {
   options: EngineOptions | null; // null = not started
@@ -83,6 +85,67 @@ export function useTetrisLoop({ options, paused = false, onEvents, onFrame, keys
       window.removeEventListener('keydown', down);
       window.removeEventListener('keyup', up);
       window.removeEventListener('blur', blur);
+    };
+  }, []);
+
+  // Mouse: right button rotates. Left button works like Space: a quick click hard-drops,
+  // holding it soft-drops until release. Clicks on buttons, links, fields and dialogs are left alone.
+  useEffect(() => {
+    let leftDown = false;
+    let softing = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const active = () => !!engine.current && !pausedRef.current && !engine.current.over;
+    const ignored = (e: MouseEvent) =>
+      !!(e.target as HTMLElement | null)?.closest?.('button, a, input, select, textarea, label, [role="dialog"], [data-no-game-mouse]');
+    const stopSoft = () => {
+      if (!softing) return;
+      softing = false;
+      held.current.delete(A.SOFT);
+      queue.current.push({ a: A.SOFT, d: false });
+    };
+    const reset = () => {
+      if (timer) clearTimeout(timer);
+      timer = null;
+      leftDown = false;
+      stopSoft();
+    };
+    const down = (e: MouseEvent) => {
+      if (!active() || ignored(e)) return;
+      if (e.button === 2) {
+        e.preventDefault();
+        queue.current.push({ a: A.CW, d: true }, { a: A.CW, d: false });
+      } else if (e.button === 0) {
+        e.preventDefault();
+        reset();
+        leftDown = true;
+        timer = setTimeout(() => {
+          timer = null;
+          if (!leftDown || !active()) return;
+          softing = true;
+          held.current.add(A.SOFT);
+          queue.current.push({ a: A.SOFT, d: true });
+        }, MOUSE_TAP_MS);
+      }
+    };
+    const up = (e: MouseEvent) => {
+      if (e.button !== 0 || !leftDown) return;
+      const tapped = timer !== null;
+      reset();
+      if (tapped && active()) queue.current.push({ a: A.HARD, d: true }, { a: A.HARD, d: false });
+    };
+    const menu = (e: MouseEvent) => {
+      if (engine.current && !engine.current.over && !ignored(e)) e.preventDefault();
+    };
+    window.addEventListener('mousedown', down);
+    window.addEventListener('mouseup', up);
+    window.addEventListener('contextmenu', menu);
+    window.addEventListener('blur', reset);
+    return () => {
+      reset();
+      window.removeEventListener('mousedown', down);
+      window.removeEventListener('mouseup', up);
+      window.removeEventListener('contextmenu', menu);
+      window.removeEventListener('blur', reset);
     };
   }, []);
 

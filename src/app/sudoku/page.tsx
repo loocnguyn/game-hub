@@ -162,7 +162,7 @@ export default function SudokuPage() {
             <span className="font-display text-lg text-text tabular-nums">{formatMs(doneMs ?? now - startedAt)}</span>
           </div>
           {loading ? <div className="grid aspect-square w-full max-w-[560px] place-items-center"><Spinner className="h-8 w-8" /></div> : (
-            <div className="grid aspect-square w-full max-w-[560px] grid-cols-9 overflow-hidden rounded-2xl border-2 border-violet-400/40 bg-[#0c0e22] shadow-[0_30px_80px_-30px_rgba(129,140,248,0.6)]">
+            <div className="grid aspect-square w-full max-w-[560px] grid-cols-9 overflow-hidden rounded-2xl border-2 border-violet-400/40 bg-[#0c0e22]">
               {grid.map((v, i) => {
                 const r = Math.floor(i / 9), c = i % 9;
                 const given = puzzle[i] !== 0;
@@ -178,7 +178,7 @@ export default function SudokuPage() {
                       c % 3 === 2 && c < 8 && 'border-r-2 border-r-violet-400/40', c % 3 !== 2 && 'border-r border-r-white/5',
                       r % 3 === 2 && r < 8 && 'border-b-2 border-b-violet-400/40', r % 3 !== 2 && 'border-b border-b-white/5',
                       i === sel ? 'bg-violet-500/40' : same ? 'bg-violet-500/20' : related ? 'bg-white/[0.05]' : '',
-                      given ? 'font-bold text-slate-100' : wrong ? 'text-rose-400' : 'text-cyan-300',
+                      given ? 'font-bold text-slate-100' : wrong ? 'text-rose-400' : 'text-accent',
                     )}
                   >
                     {v ? v : notes[i] ? (
