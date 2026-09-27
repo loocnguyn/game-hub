@@ -45,4 +45,7 @@ npm run typecheck
 - Database: các file trong `supabase/migrations/` (003 → 005).
 - Edge function: `npx supabase functions deploy hub --no-verify-jwt --project-ref fedhavhjkmsweyhsxkkk`
   (hoặc `npm run bundle:fn` để gộp thành một file `.tmp/hub.bundle.js`).
-- Web: deploy thư mục gốc lên Vercel như một app Next.js bình thường.
+- Web: app được build thành file tĩnh (`output: 'export'`, ra thư mục `out/`), không cần server. Phòng chơi nằm ở
+  `/room?code=XXXX`; link cũ `/room/XXXX` được chuyển hướng trong `vercel.json`.
+  - Có tài khoản Vercel: `npx vercel deploy --prod`.
+  - Chưa đăng nhập: `npx vercel deploy --temporary` tạo link tạm (hết hạn sau 1 giờ nếu không bấm link claim).

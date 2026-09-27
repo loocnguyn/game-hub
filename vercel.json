@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/room/:code", "destination": "/room?code=:code", "permanent": false }
+  ]
+}

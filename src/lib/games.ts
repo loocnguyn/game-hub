@@ -33,7 +33,7 @@ export const GAMES: GameInfo[] = [
   { id: 'dots', name: 'Dots and Boxes', tagline: 'Nối điểm để chiếm ô, chiếm được thì đi tiếp', category: 'board', href: '/play/dots', players: '2', icon: '⊡', accent: '#34d399', accent2: '#22d3ee', badges: ['Online'] },
   { id: 'monopoly', name: 'Cờ tỉ phú', tagline: 'Mua đất, xây nhà, 2–6 người', category: 'board', href: '/play/monopoly', players: '2–6', icon: '🏙', accent: '#22c55e', accent2: '#eab308', badges: ['Online', 'Nhiều người'] },
   { id: 'tienlen', name: 'Tiến lên miền Nam', tagline: '2–4 người, luật miền Nam', category: 'cards', href: '/play/tienlen', players: '2–4', icon: '🂡', accent: '#f43f5e', accent2: '#fb923c', badges: ['Online'] },
-  { id: 'poker', name: 'Royal Poker', tagline: "Texas Hold'em Sit & Go", category: 'cards', href: '/poker/index.html', players: '2–9', icon: '♠', accent: '#e2b75a', accent2: '#10b981', badges: ['Online'], external: true },
+  { id: 'poker', name: 'Royal Poker', tagline: "Texas Hold'em Sit & Go", category: 'cards', href: '/poker', players: '2–9', icon: '♠', accent: '#e2b75a', accent2: '#10b981', badges: ['Online'], external: true },
   { id: 'minesweeper', name: 'Dò mìn', tagline: '3 cấp độ, xếp hạng theo thời gian', category: 'puzzle', href: '/minesweeper', players: '1', icon: '✹', accent: '#94a3b8', accent2: '#22d3ee', badges: ['Xếp hạng'] },
   { id: '2048', name: '2048', tagline: 'Gộp ô, có bảng xếp hạng', category: 'puzzle', href: '/2048', players: '1', icon: '⧉', accent: '#fbbf24', accent2: '#f97316', badges: ['Xếp hạng'] },
   { id: 'sudoku', name: 'Sudoku', tagline: '4 độ khó, xếp hạng theo thời gian', category: 'puzzle', href: '/sudoku', players: '1', icon: '⑨', accent: '#818cf8', accent2: '#22d3ee', badges: ['Xếp hạng'] },

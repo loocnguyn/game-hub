@@ -50,7 +50,7 @@ export function PresenceProvider({ children }: { children: ReactNode }) {
       const g = gameById(payload.game);
       toast.info(
         <span><b>{payload.fromName}</b> mời bạn chơi <b>{g?.name ?? payload.game}</b></span>,
-        { ms: 15000, action: { label: 'Vào phòng', onClick: () => router.push(`/room/${payload.code}`) } },
+        { ms: 15000, action: { label: 'Vào phòng', onClick: () => router.push(`/room?code=${payload.code}`) } },
       );
       sfx.notify();
     });

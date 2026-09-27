@@ -20,8 +20,8 @@ async function createFromLobby(page: Page, game: string, setup?: (p: Page) => Pr
   await page.goto(`/play/${game}`);
   if (setup) await setup(page);
   await page.getByRole('button', { name: 'Tạo phòng' }).click();
-  await page.waitForURL(/\/room\/[A-Z0-9]{6}$/);
-  return page.url().split('/').pop()!;
+  await page.waitForURL(/\/room\?code=[A-Z0-9]{6}$/);
+  return new URL(page.url()).searchParams.get('code')!;
 }
 
 test('presence: both players see each other online and can invite', async () => {
@@ -44,7 +44,7 @@ test('chess: create, invite by code, play to checkmate, result + rating, rematch
   await inviteBtn.click();
   await expect(B.page.getByText(/mời bạn chơi/)).toBeVisible({ timeout: 15_000 });
   await B.page.getByRole('button', { name: 'Vào phòng' }).click();
-  await B.page.waitForURL(`**/room/${code}`);
+  await B.page.waitForURL((u) => u.pathname === '/room' && u.searchParams.get('code') === code);
   await expect(A.page.getByText('Tới lượt bạn')).toBeVisible({ timeout: 20_000 });
   await expect(B.page.getByText('Lượt đối thủ')).toBeVisible();
   const sq = (p: Page, s: string) => p.locator(`[data-square="${s}"]`).first();
@@ -74,8 +74,8 @@ test('chess: create, invite by code, play to checkmate, result + rating, rematch
   await A.page.getByRole('button', { name: 'Đấu lại' }).first().click();
   await B.page.keyboard.press('Escape');
   await B.page.getByRole('button', { name: 'Đồng ý đấu lại' }).first().click();
-  await A.page.waitForURL((u) => !u.pathname.endsWith(code), { timeout: 20_000 });
-  await B.page.waitForURL((u) => !u.pathname.endsWith(code), { timeout: 20_000 });
+  await A.page.waitForURL((u) => u.searchParams.get('code') !== code, { timeout: 20_000 });
+  await B.page.waitForURL((u) => u.searchParams.get('code') !== code, { timeout: 20_000 });
   expect(A.page.url()).toBe(B.page.url());
   await expect(B.page.getByText('Tới lượt bạn')).toBeVisible({ timeout: 20_000 }); // B is white now
   await B.page.getByRole('button', { name: 'Hủy ván' }).click();
@@ -91,7 +91,7 @@ test('xiangqi: join by code, move a cannon, notation shown', async () => {
   await B.page.goto('/play/xiangqi');
   await B.page.getByPlaceholder('ABC123').fill(code);
   await B.page.getByRole('button', { name: 'Vào', exact: true }).click();
-  await B.page.waitForURL(`**/room/${code}`);
+  await B.page.waitForURL((u) => u.pathname === '/room' && u.searchParams.get('code') === code);
   await expect(A.page.getByText('Tới lượt bạn')).toBeVisible({ timeout: 20_000 });
   // click the red cannon on h2 (col 7,row 7 from the top) then e2 (col 4)
   const svg = A.page.locator('svg[viewBox="0 0 568 628"]');
@@ -112,7 +112,7 @@ test('caro: five in a row wins', async () => {
   const code = await createFromLobby(A.page, 'caro', async (p) => {
     await p.getByRole('button', { name: 'X (đi trước)', exact: true }).click();
   });
-  await B.page.goto(`/room/${code}`);
+  await B.page.goto(`/room?code=${code}`);
   await expect(A.page.getByText('Tới lượt bạn')).toBeVisible({ timeout: 20_000 });
   const cell = (p: Page, i: number) => p.getByRole('button', { name: `Ô ${i}`, exact: true });
   for (let k = 0; k < 5; k++) {
@@ -134,7 +134,7 @@ test('dots: lines are drawn and the board renders', async () => {
     await p.getByRole('button', { name: 'Đi trước', exact: true }).click();
     await p.getByRole('button', { name: '3×3', exact: true }).click();
   });
-  await B.page.goto(`/room/${code}`);
+  await B.page.goto(`/room?code=${code}`);
   await expect(A.page.getByText('Tới lượt bạn')).toBeVisible({ timeout: 20_000 });
   // click the top-left horizontal line: between dots (40,40) and (140,40) in a 380 viewBox
   const svg = A.page.locator('svg[viewBox="0 0 380 380"]');
@@ -150,9 +150,9 @@ test('tetris 1v1: ready -> countdown -> both boards live -> leave = forfeit', as
   await A.page.getByRole('button', { name: 'Tính giờ (đếm KO)' }).click();
   await A.page.getByRole('button', { name: '1 phút', exact: true }).click();
   await A.page.getByRole('button', { name: 'Tạo phòng 1v1' }).click();
-  await A.page.waitForURL(/\/room\//);
-  const code = A.page.url().split('/').pop()!;
-  await B.page.goto(`/room/${code}`);
+  await A.page.waitForURL(/\/room\?code=/);
+  const code = new URL(A.page.url()).searchParams.get('code')!;
+  await B.page.goto(`/room?code=${code}`);
   await A.page.getByRole('button', { name: 'Sẵn sàng' }).click();
   await B.page.getByRole('button', { name: 'Sẵn sàng' }).click();
   await expect(A.page.getByText('Kế tiếp')).toBeVisible({ timeout: 20_000 });
@@ -169,7 +169,7 @@ test('tetris 1v1: ready -> countdown -> both boards live -> leave = forfeit', as
 
 test('tiến lên: table seats, ready, deal, my hand is visible', async () => {
   const code = await createFromLobby(A.page, 'tienlen');
-  await B.page.goto(`/room/${code}`);
+  await B.page.goto(`/room?code=${code}`);
   await expect(A.page.getByText(/Bàn chờ \(2\/4\)/)).toBeVisible({ timeout: 20_000 });
   await A.page.getByRole('button', { name: 'Sẵn sàng' }).click();
   await B.page.getByRole('button', { name: 'Sẵn sàng' }).click();
@@ -185,7 +185,7 @@ test('tiến lên: table seats, ready, deal, my hand is visible', async () => {
 
 test('cờ tỉ phú: lobby, start, roll dice (3D), buy or skip, end turn', async () => {
   const code = await createFromLobby(A.page, 'monopoly');
-  await B.page.goto(`/room/${code}`);
+  await B.page.goto(`/room?code=${code}`);
   await expect(A.page.getByRole('button', { name: 'Bắt đầu ván' })).toBeEnabled({ timeout: 20_000 });
   await A.page.getByRole('button', { name: 'Bắt đầu ván' }).click();
   // whoever's turn it is rolls

@@ -63,7 +63,7 @@ export function InvitePanel({ code, game }: { code: string; game: string }) {
   const { profile } = useAuth();
   const toast = useToast();
   const [sent, setSent] = useState<Record<string, boolean>>({});
-  const link = typeof window !== 'undefined' ? `${window.location.origin}/room/${code}` : '';
+  const link = typeof window !== 'undefined' ? `${window.location.origin}/room?code=${code}` : '';
   const others = online.filter((u) => u.id !== profile?.id);
   return (
     <Panel className="p-4">

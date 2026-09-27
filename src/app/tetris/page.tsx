@@ -199,7 +199,7 @@ function VersusCreate() {
           setBusy(true);
           try {
             const r = await api<{ code: string }>('room.create', { game: 'tetris', settings: { mode, duration, firstTo, rated } });
-            router.push(`/room/${r.code}`);
+            router.push(`/room?code=${r.code}`);
           } catch (e) {
             toast.err((e as Error).message);
             setBusy(false);

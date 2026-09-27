@@ -108,7 +108,7 @@ test('leaderboard page: tabs render', async () => {
 
 test('royal poker is served under /poker and reuses the hub login', async () => {
   await page.goto('/poker');
-  await page.waitForURL('**/poker/index.html');
+  await page.waitForURL(/\/poker(\/index\.html)?$/);
   // already signed in via the shared session: the lobby (not the login screen) shows
   await expect(page.locator('#screen-lobby')).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole('link', { name: '← Sảnh game' })).toBeVisible();
@@ -116,12 +116,12 @@ test('royal poker is served under /poker and reuses the hub login', async () => 
 });
 
 test('unknown pages and rooms show friendly errors', async () => {
-  await page.goto('/room/ZZZZZZ');
+  await page.goto('/room?code=ZZZZZZ');
   await expect(page.getByText('Không tìm thấy phòng')).toBeVisible();
   await page.goto('/play/nope');
-  await expect(page.getByText('Không có trò này')).toBeVisible();
+  await expect(page.getByText('Không có trang này')).toBeVisible();
   await page.goto('/casino/nope');
-  await expect(page.getByText('Không có trò này')).toBeVisible();
+  await expect(page.getByText('Không có trang này')).toBeVisible();
 });
 
 test('mobile viewport: hub and tetris lay out without horizontal scroll', async ({ browser }) => {

@@ -1,5 +1,5 @@
 'use client';
-import { use, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Shell } from '@/components/TopBar';
@@ -14,9 +14,7 @@ const TetrisVersus = dynamic(() => import('@/components/games/tetris/TetrisVersu
 const TienLenTable = dynamic(() => import('@/components/games/TienLenTable'), { ssr: false });
 const MonopolyGame = dynamic(() => import('@/components/games/monopoly/MonopolyGame'), { ssr: false });
 
-export default function RoomPage({ params }: { params: Promise<{ code: string }> }) {
-  const { code: raw } = use(params);
-  const code = decodeURIComponent(raw).toUpperCase();
+export default function RoomView({ code }: { code: string }) {
   const authed = useRequireAuth();
   const { profile } = useAuth();
   const room = useRoom(code, { userId: profile?.id });

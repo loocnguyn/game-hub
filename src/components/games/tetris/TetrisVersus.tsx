@@ -159,7 +159,7 @@ export default function TetrisVersus({ room }: { room: Room }) {
   }, [s.status, s.result, mySide]);
 
   useEffect(() => {
-    if (s.nextCode) router.push(`/room/${s.nextCode}`);
+    if (s.nextCode) router.push(`/room?code=${s.nextCode}`);
   }, [s.nextCode, router]);
 
   const act = async (action: string, params: Record<string, unknown> = {}) => {

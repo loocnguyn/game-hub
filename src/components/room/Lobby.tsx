@@ -47,7 +47,7 @@ export function OpenRooms({ game }: { game: string }) {
         <ul className="mt-3 space-y-2">
           {rooms.map((r) => (
             <li key={r.code}>
-              <Link href={`/room/${r.code}`} className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] px-3 py-2 transition hover:border-cyan-400/30 hover:bg-white/[0.06]">
+              <Link href={`/room?code=${r.code}`} className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] px-3 py-2 transition hover:border-cyan-400/30 hover:bg-white/[0.06]">
                 <Avatar name={roomHost(r)} size={32} />
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-semibold">{roomHost(r)}</div>
@@ -69,7 +69,7 @@ export function JoinByCode() {
   return (
     <Panel className="p-5">
       <h3 className="font-display text-lg font-bold">Vào bằng mã</h3>
-      <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); if (code.trim()) router.push(`/room/${code.trim().toUpperCase()}`); }}>
+      <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); if (code.trim()) router.push(`/room?code=${code.trim().toUpperCase()}`); }}>
         <input className={clsx(inputClass, 'font-mono uppercase tracking-widest')} value={code} maxLength={8} onChange={(e) => setCode(e.target.value)} placeholder="ABC123" />
         <Button>Vào</Button>
       </form>

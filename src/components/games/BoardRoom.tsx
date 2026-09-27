@@ -94,7 +94,7 @@ export default function BoardRoom({ room }: { room: Room }) {
 
   // Rematch accepted: follow to the new room.
   useEffect(() => {
-    if (s.nextCode) router.push(`/room/${s.nextCode}`);
+    if (s.nextCode) router.push(`/room?code=${s.nextCode}`);
   }, [s.nextCode, router]);
 
   const canMove = s.status === 'playing' && mySide !== null && s.turn === mySide && !pending;
