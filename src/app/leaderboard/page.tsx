@@ -7,6 +7,7 @@ import { LeaderboardPanel } from '@/components/Leaderboard';
 import { useAuth, useRequireAuth } from '@/lib/auth';
 import { useWhere } from '@/lib/presence';
 import { sb } from '@/lib/supabase';
+import { RoleBadge, useAdmins } from '@/lib/roles';
 
 const RATING_CATS = [
   { id: 'chess_bullet', label: 'Cờ vua Bullet' },
@@ -23,6 +24,7 @@ interface RatingRow { user_id: string; rating: number; rd: number; games: number
 
 function Ratings() {
   const [cat, setCat] = useState('chess_blitz');
+  const admins = useAdmins();
   const [rows, setRows] = useState<RatingRow[] | null>(null);
   const { profile } = useAuth();
   useEffect(() => {
@@ -55,7 +57,7 @@ function Ratings() {
             {rows.map((r, i) => (
               <tr key={r.user_id} className={clsx('border-t border-white/5', r.user_id === profile?.id && 'bg-accent/10')}>
                 <td className="py-2 font-display font-bold text-dim">{i + 1}</td>
-                <td><div className="flex items-center gap-2"><Avatar name={r.name ?? '?'} size={26} />{r.name}</div></td>
+                <td><div className="flex items-center gap-2"><Avatar name={r.name ?? '?'} size={26} />{r.name}<RoleBadge role={admins.has(r.user_id) ? 'admin' : 'member'} /></div></td>
                 <td className="text-right font-display font-bold">{Math.round(r.rating)}{r.rd > 110 && <span className="text-dim">?</span>}</td>
                 <td className="text-right">{r.games}</td>
                 <td className="hidden text-right text-muted sm:table-cell">{r.wins} / {r.draws} / {r.losses}</td>
@@ -70,6 +72,7 @@ function Ratings() {
 
 function Richest() {
   const [rows, setRows] = useState<{ user_id: string; chips: number; name?: string }[] | null>(null);
+  const admins = useAdmins();
   useEffect(() => {
     (async () => {
       const { data } = await sb().from('hub_wallets').select('user_id, chips').order('chips', { ascending: false }).limit(30);
@@ -90,7 +93,7 @@ function Richest() {
             <li key={r.user_id} className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-2.5 py-1.5">
               <span className="w-6 text-center font-display font-bold text-dim">{i + 1}</span>
               <Avatar name={r.name ?? '?'} size={26} />
-              <span className="flex-1 truncate">{r.name}</span>
+              <span className="flex min-w-0 flex-1 items-center gap-1.5"><span className="truncate">{r.name}</span><RoleBadge role={admins.has(r.user_id) ? 'admin' : 'member'} /></span>
               <span className="font-display font-bold text-amber-200">{formatChips(r.chips)}</span>
             </li>
           ))}

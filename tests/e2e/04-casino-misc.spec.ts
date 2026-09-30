@@ -118,10 +118,14 @@ test('royal poker is served under /poker and reuses the hub login', async () => 
 test('unknown pages and rooms show friendly errors', async () => {
   await page.goto('/room?code=ZZZZZZ');
   await expect(page.getByText('Không tìm thấy phòng')).toBeVisible();
-  await page.goto('/play/nope');
-  await expect(page.getByText('Không có trang này')).toBeVisible();
-  await page.goto('/casino/nope');
-  await expect(page.getByText('Không có trang này')).toBeVisible();
+  // With output: 'export', `next dev` throws for params missing from generateStaticParams instead of
+  // rendering the 404 page; the exported site serves 404.html. So check these against a deployed build only.
+  if (process.env.E2E_BASE_URL) {
+    await page.goto('/play/nope');
+    await expect(page.getByText('Không có trang này')).toBeVisible();
+    await page.goto('/casino/nope');
+    await expect(page.getByText('Không có trang này')).toBeVisible();
+  }
 });
 
 test('mobile viewport: hub and tetris lay out without horizontal scroll', async ({ browser }) => {

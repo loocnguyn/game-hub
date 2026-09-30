@@ -6,6 +6,7 @@ import { clsx } from 'clsx';
 import { useAuth } from '@/lib/auth';
 import { usePresence } from '@/lib/presence';
 import { api } from '@/lib/api';
+import { RoleBadge, useAdmins } from '@/lib/roles';
 import { Avatar, Button, Field, Modal, formatChips, inputClass, useToast } from './ui';
 
 export function LogoMark({ size = 34 }: { size?: number }) {
@@ -48,6 +49,8 @@ export function TopBar() {
   const [showOnline, setShowOnline] = useState(false);
   const [editName, setEditName] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const admins = useAdmins();
+  const myRole = profile && admins.has(profile.id) ? 'admin' : 'member';
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/95">
@@ -73,10 +76,11 @@ export function TopBar() {
               <button onClick={() => setMenu((m) => !m)} className="flex items-center gap-2 rounded-lg p-1 pr-2 transition hover:bg-white/5">
                 <Avatar name={profile.name} size={34} />
                 <span className="hidden max-w-[120px] truncate text-sm font-semibold md:block">{profile.name}</span>
+                <RoleBadge role={myRole} className="hidden md:inline-flex" />
               </button>
               {menu && (
                 <div className="glass absolute right-0 mt-2 w-56 overflow-hidden rounded-lg p-1 shadow-2xl" onMouseLeave={() => setMenu(false)}>
-                  <div className="px-3 py-2 text-xs text-dim">@{profile.username}</div>
+                  <div className="px-3 py-2 text-xs text-dim">@{profile.username} · {myRole === 'admin' ? 'Admin' : 'Member'}</div>
                   <button className="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-white/10" onClick={() => { setMenu(false); setEditName(profile.name); }}>Đổi tên hiển thị</button>
                   <button className="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-white/10" onClick={() => { setMenu(false); router.push('/leaderboard'); }}>Bảng xếp hạng</button>
                   <button className="w-full rounded-lg px-3 py-2 text-left text-sm text-rose-300 hover:bg-white/10" onClick={async () => { await signOut(); router.replace('/'); }}>Đăng xuất</button>
@@ -93,7 +97,7 @@ export function TopBar() {
             <li key={u.id} className="flex items-center gap-3 rounded-lg bg-white/[0.04] px-3 py-2">
               <Avatar name={u.name} size={32} />
               <div className="min-w-0">
-                <div className="truncate font-semibold">{u.name}{u.id === profile?.id && <span className="ml-1 text-xs text-dim">(bạn)</span>}</div>
+                <div className="flex items-center gap-1.5 font-semibold"><span className="truncate">{u.name}</span><RoleBadge role={admins.has(u.id) ? 'admin' : 'member'} />{u.id === profile?.id && <span className="text-xs text-dim">(bạn)</span>}</div>
                 <div className="truncate text-xs text-muted">{u.where}</div>
               </div>
             </li>

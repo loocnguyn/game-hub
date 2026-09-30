@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { clsx } from 'clsx';
 import { sb } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
+import { RoleBadge, useAdmins } from '@/lib/roles';
 import { Avatar, Panel, Segmented, Spinner, formatMs } from './ui';
 
 export interface LbRow {
@@ -42,6 +43,7 @@ export function LeaderboardPanel({
   const [period, setPeriod] = useState<'all' | 'week' | 'day'>('all');
   const { rows, error } = useLeaderboard(game, mode, period, lowerIsBetter, reloadKey);
   const { profile } = useAuth();
+  const admins = useAdmins();
   return (
     <Panel className={clsx('p-5', className)}>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -56,7 +58,7 @@ export function LeaderboardPanel({
             <li key={r.user_id} className={clsx('flex items-center gap-3 rounded-xl px-2.5 py-1.5', r.user_id === profile?.id ? 'bg-accent/10 ring-1 ring-accent/30' : 'bg-white/[0.03]')}>
               <span className={clsx('font-display w-7 text-center font-bold', i === 0 ? 'text-amber-300' : i === 1 ? 'text-slate-300' : i === 2 ? 'text-orange-400' : 'text-dim')}>{i + 1}</span>
               <Avatar name={r.name} size={28} />
-              <span className="min-w-0 flex-1 truncate font-medium">{r.name}</span>
+              <span className="flex min-w-0 flex-1 items-center gap-1.5 font-medium"><span className="truncate">{r.name}</span><RoleBadge role={admins.has(r.user_id) ? 'admin' : 'member'} /></span>
               {extra?.(r)}
               <span className="font-display font-bold tabular-nums text-accent">
                 {lowerIsBetter ? formatMs(r.time_ms ?? 0, true) : Number(r.score).toLocaleString('vi-VN')}
